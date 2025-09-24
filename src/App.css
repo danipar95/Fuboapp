@@ -1,0 +1,146 @@
+/* Colores y Variables */
+:root {
+  --field-color: #588f27;
+  --line-color: #ffffff;
+  --goal-color: #cccccc;
+  --line-thickness: 0.8vh;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background-color: #333;
+}
+
+.field-boundary {
+  position: relative;
+  width: calc(100vh / 1.5 * 0.9); /* Ancho del 90% del alto, manteniendo proporción */
+  height: 90vh;
+  background-color: var(--field-color);
+  border: var(--line-thickness) solid var(--line-color);
+  border-radius: 2vh;
+  overflow: hidden;
+}
+
+/* Líneas y elementos principales */
+.halfway-line {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  width: 100%;
+  height: var(--line-thickness);
+  background-color: var(--line-color);
+  transform: translateY(-50%);
+}
+
+.center-circle {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 15vh;
+  height: 15vh;
+  border: var(--line-thickness) solid var(--line-color);
+  border-radius: 50%;
+}
+
+.center-spot {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: calc(var(--line-thickness) * 2);
+  height: calc(var(--line-thickness) * 2);
+  background-color: var(--line-color);
+  border-radius: 50%;
+  z-index: 2;
+}
+
+/* Áreas de penal */
+.penalty-area,
+.goal-area,
+.penalty-spot {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.penalty-area {
+  width: calc(100vh / 1.5 * 0.45 * 0.9);
+  height: 20vh;
+  border: var(--line-thickness) solid var(--line-color);
+}
+
+.penalty-area.top {
+  top: 0;
+  border-top: none;
+}
+
+.penalty-area.bottom {
+  bottom: 0;
+  border-bottom: none;
+}
+
+/* Área de gol (dentro del área de penal) */
+.goal-area {
+  width: calc(100vh / 1.5 * 0.2 * 0.9);
+  height: 7vh;
+  border: var(--line-thickness) solid var(--line-color);
+}
+
+.goal-area.top {
+  top: 0;
+  border-top: none;
+}
+
+.goal-area.bottom {
+  bottom: 0;
+  border-bottom: none;
+}
+
+/* Puntos de penal */
+.penalty-spot {
+  width: calc(var(--line-thickness) * 2);
+  height: calc(var(--line-thickness) * 2);
+  background-color: var(--line-color);
+  border-radius: 50%;
+  z-index: 2;
+}
+
+.penalty-spot.top {
+  top: 12vh;
+}
+
+.penalty-spot.bottom {
+  bottom: 12vh;
+}
+
+/* Arcos de penal y esquinas */
+/* (Estos son los elementos más complejos, la versión anterior podría tener errores de `transform` o `clip-path`).
+Para simplificar, se pueden quitar temporalmente o re-evaluar sus estilos de forma independiente.
+Te sugiero empezar sin ellos y agregarlos una vez que el resto del campo esté bien.) */
+
+/* Porterías */
+.goal {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  width: calc(100vh / 1.5 * 0.18 * 0.9);
+  height: 2vh;
+  background-color: var(--goal-color);
+  border: 0.4vh solid #666;
+  z-index: 0;
+}
+
+.goal.top {
+  top: calc(var(--line-thickness) * -2);
+}
+
+.goal.bottom {
+  bottom: calc(var(--line-thickness) * -2);
+}
+
