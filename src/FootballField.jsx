@@ -1,11 +1,23 @@
 import React, { useState, useEffect } from 'react';
+import {
+  DndContext,
+  PointerSensor,
+  TouchSensor,
+  useSensor,
+  useSensors,
+  DragOverlay,
+  useDraggable,
+  useDroppable
+} from '@dnd-kit/core';
+import { CSS } from '@dnd-kit/utilities';
 import './FootballField.css';
 import playersData from './players.json';
-import Modal from './Modal'; // Importamos el componente Modal
+import Modal from './Modal';
 import html2canvas from 'html2canvas';
 import { saveAs } from 'file-saver';
 
-const positionOrder = ["Delantero", "Mediocampista", "Defensa", "Portero"];
+// --- CONFIGURACIÓN DE DATOS ---
+
 const availableFormations = ["5-3-2", "5-4-1", "4-4-2", "4-3-3", "4-5-1", "3-5-2", "3-4-3"];
 
 const hardcodedUsers = {
@@ -31,26 +43,26 @@ const formationPositions = {
     { y: 80, x: 50, position: 'Delantero' }
   ],
   "4-4-2": [
-    { y: 7, x: 50, position: 'Portero' }, 
-    { y: 30, x: 15, position: 'Defensa' },{ y: 20, x: 30, position: 'Defensa' }, 
-    { y: 20, x: 70, position: 'Defensa' },{ y: 30, x: 85, position: 'Defensa' }, 
+    { y: 7, x: 50, position: 'Portero' },
+    { y: 30, x: 15, position: 'Defensa' },{ y: 20, x: 30, position: 'Defensa' },
+    { y: 20, x: 70, position: 'Defensa' },{ y: 30, x: 85, position: 'Defensa' },
     { y: 55, x: 15, position: 'Mediocampista' }, { y: 45, x: 30, position: 'Mediocampista' },
     { y: 45, x: 70, position: 'Mediocampista' }, { y: 55, x: 85, position: 'Mediocampista' },
     { y: 80, x: 35, position: 'Delantero' },{ y: 80, x: 65, position: 'Delantero' }
   ],
   "4-3-3": [
-    { y: 7, x: 50, position: 'Portero' }, 
-    { y: 30, x: 15, position: 'Defensa' },{ y: 20, x: 30, position: 'Defensa' }, 
-    { y: 20, x: 70, position: 'Defensa' },{ y: 30, x: 85, position: 'Defensa' }, 
+    { y: 7, x: 50, position: 'Portero' },
+    { y: 30, x: 15, position: 'Defensa' },{ y: 20, x: 30, position: 'Defensa' },
+    { y: 20, x: 70, position: 'Defensa' },{ y: 30, x: 85, position: 'Defensa' },
     { y: 55, x: 25, position: 'Mediocampista' }, { y: 55, x: 50, position: 'Mediocampista' },
     { y: 55, x: 75, position: 'Mediocampista' },
     { y: 80, x: 25, position: 'Delantero' }, { y: 85, x: 50, position: 'Delantero' },
     { y: 80, x: 75, position: 'Delantero' }
   ],
   "4-5-1": [
-    { y: 7, x: 50, position: 'Portero' }, 
-    { y: 30, x: 15, position: 'Defensa' },{ y: 20, x: 30, position: 'Defensa' }, 
-    { y: 20, x: 70, position: 'Defensa' },{ y: 30, x: 85, position: 'Defensa' }, 
+    { y: 7, x: 50, position: 'Portero' },
+    { y: 30, x: 15, position: 'Defensa' },{ y: 20, x: 30, position: 'Defensa' },
+    { y: 20, x: 70, position: 'Defensa' },{ y: 30, x: 85, position: 'Defensa' },
     { y: 60, x: 10, position: 'Mediocampista' },
     { y: 55, x: 30, position: 'Mediocampista' }, { y: 45, x: 50, position: 'Mediocampista' },
     { y: 55, x: 70, position: 'Mediocampista' }, { y: 60, x: 90, position: 'Mediocampista' },
@@ -74,340 +86,205 @@ const formationPositions = {
   ]
 };
 
-const PlayerOnField = ({ player, onClick, onDragStart }) => {
+// --- COMPONENTES AUXILIARES ---
+
+const DraggablePlayer = ({ player, teamName }) => {
+  const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({
+    id: player.id,
+    data: { ...player, teamName }
+  });
+
+  const style = { transform: CSS.Translate.toString(transform), opacity: isDragging ? 0.3 : 1 };
+
   return (
-    <div
-      className="player-on-field"
-      style={{ top: `${player.y}%`, left: `${player.x}%` }}
-      onClick={() => onClick(player.id)}
-      draggable="true"
-      onDragStart={onDragStart}
-    >
-      <div className="player-info">
-        <span className="player-name">{player.name}</span>
-        <span className="player-team">{player.teamName}</span>
-      </div>
-    </div>
+    <li ref={setNodeRef} style={style} {...listeners} {...attributes} className="draggable-player">
+      <strong>{player.name}</strong> - {player.position}
+    </li>
   );
 };
 
-const PlayerPlaceholder = ({ position, top, left, onDropPlayer, onDragOver }) => {
+const PlayerPlaceholder = ({ id, position, top, left }) => {
+  const { setNodeRef, isOver } = useDroppable({
+    id: id,
+    data: { position, top, left }
+  });
+
   return (
-    <div
-      className="player-placeholder"
-      style={{ top: `${top}%`, left: `${left}%` }}
-      onDrop={(e) => onDropPlayer(e, { position, top, left })}
-      onDragOver={onDragOver}
-    >
+    <div ref={setNodeRef} className={`player-placeholder ${isOver ? 'is-over' : ''}`} style={{ top: `${top}%`, left: `${left}%` }}>
       {position.substring(0, 3)}
     </div>
   );
 };
 
+// --- COMPONENTE PRINCIPAL ---
+
 const FootballField = () => {
-  const [selectedTeam, setSelectedTeam] = useState(playersData[0]);
-  const [isPanelOpen, setIsPanelOpen] = useState(true);
-  const [selectedFormation, setSelectedFormation] = useState(availableFormations[2]);
-  const [onFieldPlayers, setOnFieldPlayers] = useState([]);
   const [loggedInUser, setLoggedInUser] = useState(null);
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const [selectedTeam, setSelectedTeam] = useState(playersData[0]);
+  const [selectedFormation, setSelectedFormation] = useState("4-4-2");
+  const [onFieldPlayers, setOnFieldPlayers] = useState([]);
+  const [isPanelOpen, setIsPanelOpen] = useState(true);
+  const [activePlayer, setActivePlayer] = useState(null);
   const [modalMessage, setModalMessage] = useState(null);
   const [confirmModal, setConfirmModal] = useState(null);
 
+  const sensors = useSensors(
+    useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
+    useSensor(TouchSensor, { activationConstraint: { delay: 250, tolerance: 5 } })
+  );
+
   useEffect(() => {
     if (loggedInUser) {
-      const savedPlayers = localStorage.getItem(`team-${loggedInUser}`);
-      if (savedPlayers) {
-        setOnFieldPlayers(JSON.parse(savedPlayers));
-      } else {
-        setOnFieldPlayers([]);
-      }
+      const saved = localStorage.getItem(`team-${loggedInUser}`);
+      if (saved) setOnFieldPlayers(JSON.parse(saved));
     }
   }, [loggedInUser]);
-
-  const handleTeamChange = (event) => {
-    const teamName = event.target.value;
-    const team = playersData.find(t => t.teamName === teamName);
-    setSelectedTeam(team);
-  };
-
-  const handleFormationChange = (event) => {
-    setSelectedFormation(event.target.value);
-    setOnFieldPlayers([]);
-  };
-
-  const togglePanel = () => {
-    setIsPanelOpen(!isPanelOpen);
-  };
-
-  const handleDragStart = (e, player) => {
-    const playerDataWithTeam = { ...player, teamName: selectedTeam.teamName };
-    e.dataTransfer.setData("player", JSON.stringify(playerDataWithTeam));
-    setIsPanelOpen(false);
-  };
-
-  const handleDragOver = (e) => {
-    e.preventDefault();
-  };
-
-  const handleDropPlayer = (e, targetPosition) => {
-    e.preventDefault();
-    setIsPanelOpen(true);
-    const playerData = JSON.parse(e.dataTransfer.getData("player"));
-
-    const playersFromSameTeam = onFieldPlayers.filter(p => p.teamName === playerData.teamName);
-    if (playersFromSameTeam.length >= 2) {
-      setModalMessage(`¡Solo puedes tener un máximo de dos jugadores de ${playerData.teamName} en el campo!`);
-      return;
-    }
-
-    if (playerData.position !== targetPosition.position) {
-      setModalMessage(`¡${playerData.position} no puede ir en la posición de ${targetPosition.position}!`);
-      return;
-    }
-
-    const isPositionOccupied = onFieldPlayers.some(p => p.x === targetPosition.left && p.y === targetPosition.top);
-    if (isPositionOccupied) {
-      setModalMessage("¡Esa posición ya está ocupada!");
-      return;
-    }
-
-    const isPlayerOnField = onFieldPlayers.some(p => p.id === playerData.id);
-    if (isPlayerOnField) {
-      // Si el jugador ya está en el campo, actualiza su posición
-      const newPlayers = onFieldPlayers.map(p => {
-        if (p.id === playerData.id) {
-          return { ...p, x: targetPosition.left, y: targetPosition.top };
-        }
-        return p;
-      });
-      setOnFieldPlayers(newPlayers);
-    } else {
-      // Si es un jugador nuevo, agrégalo
-      const newPlayerOnField = { ...playerData, x: targetPosition.left, y: targetPosition.top };
-      setOnFieldPlayers([...onFieldPlayers, newPlayerOnField]);
-    }
-  };
-
-  const removePlayerFromField = (playerId) => {
-    setOnFieldPlayers(onFieldPlayers.filter(p => p.id !== playerId));
-  };
-
-  const groupPlayersByPosition = (players) => {
-    const grouped = {};
-    players.forEach(player => {
-      if (!grouped[player.position]) {
-        grouped[player.position] = [];
-      }
-      grouped[player.position].push(player);
-    });
-    return grouped;
-  };
-
-  const groupedPlayers = selectedTeam ? groupPlayersByPosition(selectedTeam.players) : {};
-  const availablePlayers = selectedTeam.players.filter(player => !onFieldPlayers.some(p => p.id === player.id));
-  const groupedAvailablePlayers = groupPlayersByPosition(availablePlayers);
 
   const handleLogin = (e) => {
     e.preventDefault();
     if (hardcodedUsers[username] === password) {
       setLoggedInUser(username);
       setPassword('');
-      setModalMessage(`¡Bienvenido, ${username}!`);
     } else {
       setModalMessage('Usuario o contraseña incorrectos.');
     }
   };
 
-  const handleLogout = () => {
-    setLoggedInUser(null);
-    setOnFieldPlayers([]);
-    setModalMessage('Has cerrado sesión.');
+  const handleDragStart = (event) => {
+    setActivePlayer(event.active.data.current);
+    if (window.innerWidth < 768) setIsPanelOpen(false);
   };
 
-  /*const handleSaveTeam = () => {
-    if (loggedInUser) {
-      localStorage.setItem(`team-${loggedInUser}`, JSON.stringify(onFieldPlayers));
-      setModalMessage('¡Equipo guardado con éxito!');
+  const handleDragEnd = (event) => {
+    const { over, active } = event;
+    setActivePlayer(null);
+    setIsPanelOpen(true);
+
+    if (over && active) {
+      const playerData = active.data.current;
+      const targetPos = over.data.current;
+
+      const teamCount = onFieldPlayers.filter(p => p.teamName === playerData.teamName).length;
+      if (teamCount >= 2) return setModalMessage(`Máximo 2 de ${playerData.teamName}`);
+      if (playerData.position !== targetPos.position) return setModalMessage("Posición incorrecta");
+
+      setOnFieldPlayers([...onFieldPlayers, { ...playerData, x: targetPos.left, y: targetPos.top }]);
     }
-  };*/
-    const handleSaveTeam = () => {
-    if (loggedInUser) {
-        setConfirmModal({
-        message: '¡Equipo guardado con éxito! ¿Quieres también descargarlo como una imagen?',
-        onConfirm: () => {
-            localStorage.setItem(`team-${loggedInUser}`, JSON.stringify(onFieldPlayers));
-            setConfirmModal(null);
-            handleDownloadImage();
-        },
-        onCancel: () => {
-            localStorage.setItem(`team-${loggedInUser}`, JSON.stringify(onFieldPlayers));
-            setConfirmModal(null);
-        }
-        });
- const handleDownloadImage = () => {
-  const input = document.getElementById('field-boundary');
-  if (input) {
-    html2canvas(input, {
-      allowTaint: true,
-      useCORS: true,
-      backgroundColor: null,
-    }).then(function(canvas) {
-      const now = new Date();
-      
-      // Formatear la fecha
-      const year = now.getFullYear();
-      const month = String(now.getMonth() + 1).padStart(2, '0');
-      const day = String(now.getDate()).padStart(2, '0');
-      
-      // Formatear la hora, minuto y segundo
-      const hours = String(now.getHours()).padStart(2, '0');
-      const minutes = String(now.getMinutes()).padStart(2, '0');
-      const seconds = String(now.getSeconds()).padStart(2, '0');
-      
-      // Crear el nombre del archivo con usuario, fecha y hora
-      const filename = `${loggedInUser}-${year}-${month}-${day} ${hours}:${minutes}:${seconds}.png`;
+  };
 
-      canvas.toBlob(function(blob) {
-        saveAs(blob, filename);
-      });
+  const handleDownloadImage = () => {
+    const input = document.getElementById('field-boundary');
+    html2canvas(input, { useCORS: true }).then(canvas => {
+      const filename = `${loggedInUser}-${new Date().getTime()}.png`;
+      canvas.toBlob(blob => saveAs(blob, filename));
     });
-  }
-};
-  }
-};
+  };
 
-  return (
-    <div className="field-container">
-      {modalMessage && <Modal message={modalMessage} onClose={() => setModalMessage(null)} />}
-        {confirmModal && (
-    <Modal
-        message={confirmModal.message}
-        onClose={confirmModal.onCancel}
-        onConfirm={confirmModal.onConfirm}
-        showButtons={true}
-    />
-    )}
-      {!loggedInUser ? (
-        <div className="login-form-container">
+  const handleSaveTeam = () => {
+    setConfirmModal({
+      message: '¿Guardar equipo y descargar imagen?',
+      onConfirm: () => {
+        localStorage.setItem(`team-${loggedInUser}`, JSON.stringify(onFieldPlayers));
+        handleDownloadImage();
+        setConfirmModal(null);
+      },
+      onCancel: () => {
+        localStorage.setItem(`team-${loggedInUser}`, JSON.stringify(onFieldPlayers));
+        setConfirmModal(null);
+      }
+    });
+  };
+
+  // --- RENDER DE LOGIN ---
+  if (!loggedInUser) {
+    return (
+      <div className="login-container">
+        {modalMessage && <Modal message={modalMessage} onClose={() => setModalMessage(null)} />}
+        <div className="login-card">
+          <div className="login-header">
+            <h1>⚽ FUBOLITO</h1>
+            <p>Liga Fantasy del Fútbol Paraguayo</p>
+          </div>
           <form onSubmit={handleLogin} className="login-form">
-            <h2>Iniciar Sesión</h2>
-            <p>FUBOLITO V1.0</p>
-            <input
-              type="text"
-              placeholder="Usuario"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              required
-            />
-            <input
-              type="password"
-              placeholder="Contraseña"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-            />
-            <button type="submit">Ingresar</button>
+            <div className="input-group">
+              <label>Usuario</label>
+              <input type="text" placeholder="Ingresá tu usuario" value={username} onChange={e => setUsername(e.target.value)} required />
+            </div>
+            <div className="input-group">
+              <label>Contraseña</label>
+              <input type="password" placeholder="Tu contraseña" value={password} onChange={e => setPassword(e.target.value)} required />
+            </div>
+            <button type="submit" className="login-button">Entrar a la Cancha</button>
           </form>
+          <div className="login-footer">
+            <p>Consultá con tu administrador por un acceso.</p>
+          </div>
         </div>
-      ) : (
+      </div>
+    );
+  }
+
+  // --- RENDER DEL JUEGO ---
+  return (
+    <DndContext sensors={sensors} onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
+      <div className="field-container">
+        {modalMessage && <Modal message={modalMessage} onClose={() => setModalMessage(null)} />}
+        {confirmModal && <Modal message={confirmModal.message} onClose={confirmModal.onCancel} onConfirm={confirmModal.onConfirm} showButtons={true} />}
+
         <div className="field-and-panel-wrapper">
           <div className="field-boundary" id="field-boundary">
             <div className="halfway-line"></div>
             <div className="center-circle"></div>
-            <div className="center-spot"></div>
-            <div className="goal-area top"><div className="small-goal-area"></div><div className="penalty-spot"></div><div className="penalty-arc"></div></div>
-            <div className="goal-area bottom"><div className="small-goal-area"></div><div className="penalty-spot"></div><div className="penalty-arc"></div></div>
-            <div className="goal top"></div>
-            <div className="goal bottom"></div>
-            <div className="corner-arc top-left"></div>
-            <div className="corner-arc top-right"></div>
-            <div className="corner-arc bottom-left"></div>
-            <div className="corner-arc bottom-right"></div>
 
-            {formationPositions[selectedFormation].map((pos, index) => {
-              const isOccupied = onFieldPlayers.some(p => p.x === pos.x && p.y === pos.y);
-              if (isOccupied) return null;
-              return (
-                <PlayerPlaceholder
-                  key={`${pos.y}-${pos.x}`}
-                  top={pos.y}
-                  left={pos.x}
-                  position={pos.position}
-                  onDropPlayer={handleDropPlayer}
-                  onDragOver={handleDragOver}
-                />
-              );
+            {formationPositions[selectedFormation].map((pos, i) => {
+              const occupied = onFieldPlayers.some(p => p.x === pos.x && p.y === pos.y);
+              return !occupied && <PlayerPlaceholder key={i} id={`slot-${i}`} {...pos} />;
             })}
 
-            {onFieldPlayers.map(player => (
-              <PlayerOnField
-                key={player.id}
-                player={player}
-                onClick={removePlayerFromField}
-                onDragStart={(e) => handleDragStart(e, player)} // Agregamos el onDragStart aquí para permitir mover jugadores ya en el campo
-              />
+            {onFieldPlayers.map(p => (
+              <div key={p.id} className="player-on-field" style={{ top: `${p.y}%`, left: `${p.x}%` }} onClick={() => setOnFieldPlayers(onFieldPlayers.filter(pl => pl.id !== p.id))}>
+                <span className="player-name">{p.name}</span>
+                <span className="player-team">{p.teamName}</span>
+              </div>
             ))}
           </div>
-          
+
           <div className={`teams-list-panel ${isPanelOpen ? 'panel-open' : ''}`}>
-            <button onClick={togglePanel} className="panel-toggle-btn">
-              {isPanelOpen ? '▲' : '▼'}
-            </button>
+            <button onClick={() => setIsPanelOpen(!isPanelOpen)} className="panel-toggle-btn">{isPanelOpen ? '▲' : '▼'}</button>
             <div className="teams-list-content">
-              <div className="user-info">
-                <h3>Usuario: {loggedInUser}</h3>
-                <button onClick={handleSaveTeam}>Guardar Equipo</button>
-                <button onClick={handleLogout}>Cerrar Sesión</button>
-              </div>
-              <div className="select-container">
-                <label htmlFor="formation-select">Alineación:</label>
-                <select id="formation-select" onChange={handleFormationChange} value={selectedFormation}>
-                  {availableFormations.map((formation) => (
-                    <option key={formation} value={formation}>{formation}</option>
-                  ))}
+              <h3>DT: {loggedInUser}</h3>
+              <button className="save-btn" onClick={handleSaveTeam}>Guardar Equipo</button>
+
+              <div className="select-group">
+                <label>Formación</label>
+                <select onChange={e => setSelectedFormation(e.target.value)} value={selectedFormation}>
+                  {availableFormations.map(f => <option key={f} value={f}>{f}</option>)}
                 </select>
               </div>
-              <h2>Equipos y Jugadores</h2>
-              <div className="select-container">
-                <label htmlFor="team-select">Selecciona un equipo:</label>
-                <select id="team-select" onChange={handleTeamChange} value={selectedTeam?.teamName || ''}>
-                  {playersData.map((team) => (
-                    <option key={team.teamName} value={team.teamName}>{team.teamName}</option>
-                  ))}
+
+              <div className="select-group">
+                <label>Equipo</label>
+                <select onChange={e => setSelectedTeam(playersData.find(t => t.teamName === e.target.value))}>
+                  {playersData.map(t => <option key={t.teamName} value={t.teamName}>{t.teamName}</option>)}
                 </select>
               </div>
-              {selectedTeam && (
-                <div className="players-by-position">
-                  {positionOrder.map(position => {
-                    const playersInPosition = groupedAvailablePlayers[position];
-                    if (!playersInPosition || playersInPosition.length === 0) return null;
-                    return (
-                      <div key={position} className="position-group">
-                        <h3>{position}</h3>
-                        <ul>
-                          {playersInPosition.map(player => (
-                            <li
-                              key={player.id}
-                              draggable="true"
-                              onDragStart={(e) => handleDragStart(e, player)}
-                              className="draggable-player"
-                            >
-                              <strong>{player.name}</strong> - {player.position}
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
-                    );
-                  })}
-                </div>
-              )}
+
+              <div className="players-by-position">
+                {selectedTeam.players.filter(p => !onFieldPlayers.some(fp => fp.id === p.id)).map(p => (
+                  <DraggablePlayer key={p.id} player={p} teamName={selectedTeam.teamName} />
+                ))}
+              </div>
             </div>
           </div>
         </div>
-      )}
-    </div>
+      </div>
+
+      <DragOverlay>
+        {activePlayer ? <div className="dragging-item-floating">{activePlayer.name}</div> : null}
+      </DragOverlay>
+    </DndContext>
   );
 };
 
