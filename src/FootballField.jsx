@@ -82,7 +82,7 @@ const sensors = useSensors(
   useSensor(TouchSensor, {
     activationConstraint: {
       delay: 1000,      // Debes mantener presionado 1 segundo para que empiece el drag
-      tolerance: 5,     // Si mueves el dedo más de 5px antes del segundo, se cancela (permite scroll)
+      tolerance: 10,     // Si mueves el dedo más de 5px antes del segundo, se cancela (permite scroll)
     },
   })
 );
@@ -119,8 +119,9 @@ const sensors = useSensors(
  const handleDragStart = (event) => {
   setActivePlayer(event.active.data.current);
 
-  if (navigator.vibrate) {
-    navigator.vibrate(50); // Vibra por 50 milisegundos (un toque sutil)
+  if (window.navigator && window.navigator.vibrate) {
+    window.navigator.vibrate(100);
+    console.log("Vibrando..."); // Revisa la consola en el navegador del cel
   }
 
   if (window.innerWidth < 768) setIsPanelOpen(false);

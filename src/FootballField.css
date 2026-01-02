@@ -270,8 +270,17 @@
 
 /* El elemento fantasma que queda en la lista mientras arrastras */
 .draggable-player[style*="opacity: 0.3"] {
-  border: 2px dashed #ccc;
-  background: transparent;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
+  touch-action: none;
+  background: white;
+  margin-bottom: 5px;
+  padding: 8px;
+  border: 1px solid #ddd;
+  cursor: grab;
+  list-style: none;
+  font-size: 12px;
 }
 
 .formation-badge { background: #1a1a1a; color: #fff; }
