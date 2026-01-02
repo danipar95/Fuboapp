@@ -1,334 +1,147 @@
-/* --- CONTENEDORES PRINCIPALES --- */
-.field-container {
-  width: 100%;
-  height: 100vh;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  background-color: #2c3e50;
-  overflow: hidden;
-  position: relative;
-  font-family: sans-serif;
+/* --- LOGIN --- */
+.login-container {
+  display: flex; justify-content: center; align-items: center;
+  min-height: 100vh; width: 100vw;
+  background: linear-gradient(135deg, #1e5128 0%, #000000 100%);
+  font-family: sans-serif; position: fixed; top: 0; left: 0;
+}
+.login-card {
+  background: white; padding: 2.5rem; border-radius: 15px;
+  width: 100%; max-width: 320px; text-align: center;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+}
+.login-header h1 { color: #1e5128; margin-bottom: 0.5rem; }
+.input-group { text-align: left; margin-bottom: 1.2rem; }
+.input-group label { display: block; margin-bottom: 0.4rem; font-weight: bold; color: #444; }
+.input-group input {
+  width: 100%; padding: 12px; border: 1px solid #ccc;
+  border-radius: 8px; box-sizing: border-box;
+}
+.login-button {
+  width: 100%; padding: 12px; background: #1e5128; color: white;
+  border: none; border-radius: 8px; font-weight: bold; cursor: pointer;
 }
 
-.field-and-panel-wrapper {
-  display: flex;
-  width: 100%;
-  height: 100%;
-  position: relative;
-  overflow: hidden;
-}
-
-/* --- CANCHA DE FÚTBOL --- */
+/* --- CAMPO --- */
+.field-container { width: 100vw; height: 100vh; background: #1a1a1a; overflow: hidden; }
+.field-and-panel-wrapper { display: flex; width: 100%; height: 100%; }
 .field-boundary {
-  flex-grow: 1;
-  background-color: #386641; /* Verde grama */
-  position: relative;
-  border: 5px solid white;
-  margin: 10px;
-  box-shadow: inset 0 0 50px rgba(0,0,0,0.2);
+  flex-grow: 1; position: relative; background-color: #2e7d32;
+  border: 4px solid white; margin: 10px; overflow: hidden;
+  background-image: linear-gradient(rgba(255,255,255,0.05) 2px, transparent 2px);
+  background-size: 100% 10%;
 }
-
-/* Líneas de la cancha */
-.halfway-line { position: absolute; top: 50%; left: 0; width: 100%; height: 2px; background: white; }
+.halfway-line {
+  position: absolute; top: 50%; width: 100%; height: 2px; background: white;
+}
 .center-circle {
-  position: absolute; top: 50%; left: 50%; width: 120px; height: 120px;
+  position: absolute; top: 50%; left: 50%; width: 100px; height: 100px;
   border: 2px solid white; border-radius: 50%; transform: translate(-50%, -50%);
 }
+.player-placeholder {
+  position: absolute; width: 35px; height: 35px; border: 2px dashed rgba(255,255,255,0.5);
+  border-radius: 50%; transform: translate(-50%, -50%); color: white;
+  display: flex; justify-content: center; align-items: center; font-size: 9px;
+  z-index: 5;
+}
+.player-placeholder.is-over {
+  background-color: rgba(255, 255, 255, 0.3);
+  transform: translate(-50%, -50%) scale(1.3);
+  border-style: solid;
+}
+.player-on-field {
+  position: absolute; transform: translate(-50%, -50%); background: white;
+  padding: 4px 8px; border-radius: 4px; font-size: 11px; font-weight: bold;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.3); z-index: 10; cursor: pointer;
+  color: #333; /* Texto oscuro sobre fondo blanco */
+}
+.player-team { display: block; font-size: 8px; color: #666; font-weight: normal; }
 
 /* --- PANEL LATERAL (LISTA DE EQUIPOS) --- */
 .teams-list-panel {
-  position: absolute;
-  top: 0;
-  left: 0;
-  z-index: 100;
   width: 280px;
+  background: #2c3e50; /* Cambiado a un color oscuro profesional */
+  border-left: 1px solid #34495e;
   height: 100%;
-  background-color: rgba(248, 248, 248, 0.95);
-  box-shadow: 2px 0 15px rgba(0, 0, 0, 0.3);
-  transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-  transform: translateX(-100%);
-  display: flex;
-  flex-direction: column;
-}
-
-.teams-list-panel.panel-open {
-  transform: translateX(0);
-}
-
-.teams-list-content {
-  padding: 20px;
   overflow-y: auto;
-  flex-grow: 1;
+  padding: 15px;
+  box-sizing: border-box;
+  z-index: 100;
+  transition: transform 0.3s ease;
+  color: white; /* Texto del panel en blanco */
 }
 
-/* Botón Toggle del Panel */
-.panel-toggle-btn {
-  position: absolute;
-  top: 50%;
-  right: -35px;
-  transform: translateY(-50%);
-  background-color: #34495e;
+.teams-list-panel h3 {
+  color: #3498db;
+  border-bottom: 1px solid #34495e;
+  padding-bottom: 10px;
+  margin-bottom: 15px;
+}
+
+.select-group { margin-bottom: 15px; }
+.select-group label { display: block; font-size: 12px; margin-bottom: 4px; color: #bdc3c7; }
+.select-group select {
+  width: 100%;
+  padding: 8px;
+  border-radius: 4px;
+  background: #34495e;
   color: white;
-  border: none;
-  width: 35px;
-  height: 50px;
-  cursor: pointer;
-  border-radius: 0 8px 8px 0;
-  font-size: 1.2em;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  border: 1px solid #1a252f;
 }
 
-/* --- JUGADORES Y ARRASTRE (DND-KIT) --- */
-
-/* Estilo para el jugador en la lista lateral */
+/* JUGADOR ARRASTRABLE EN LA LISTA */
 .draggable-player {
-  padding: 10px 15px;
+  background: #ffffff; /* Fondo blanco para que destaque */
   margin-bottom: 8px;
-  background-color: white;
-  border: 1px solid #e0e0e0;
-  border-radius: 6px;
-  font-size: 0.9em;
-  cursor: grab;
-  touch-action: none; /* CRÍTICO: Evita scroll en Xiaomi al arrastrar */
-  user-select: none;
-  list-style: none;
-  transition: background-color 0.2s;
-}
-
-.draggable-player:active {
-  cursor: grabbing;
-}
-
-/* El círculo punteado en la cancha */
-.player-placeholder {
-  position: absolute;
-  width: 55px;
-  height: 55px;
-  background-color: rgba(255, 255, 255, 0.1);
-  color: white;
-  border-radius: 50%;
-  border: 2px dashed rgba(255, 255, 255, 0.6);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  font-size: 0.7em;
-  font-weight: bold;
-  transform: translate(-50%, -50%);
-  z-index: 5;
-  transition: all 0.3s ease;
-}
-
-/* Efecto cuando pasas un jugador sobre el círculo */
-.player-placeholder.is-over {
-  background-color: rgba(163, 230, 53, 0.4);
-  border: 2px solid #a3e635;
-  transform: translate(-50%, -50%) scale(1.15);
-}
-
-/* Jugador posicionado en el campo */
-.player-on-field {
-  position: absolute;
-  width: 55px;
-  height: 55px;
-  background-color: #3498db; /* Color por defecto */
-  color: white;
-  border-radius: 50%;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  text-align: center;
-  cursor: pointer;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
-  z-index: 10;
-  transform: translate(-50%, -50%);
-  padding: 5px;
-  border: 2px solid white;
-}
-
-.player-name {
-  font-size: 0.75em;
-  font-weight: bold;
-  line-height: 1;
-  max-width: 100%;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.player-team {
-  font-size: 0.55em;
-  opacity: 0.9;
-  margin-top: 2px;
-}
-
-/* Elemento visual que flota bajo el dedo al arrastrar */
-.dragging-item-floating {
-  background-color: #3498db;
-  color: white;
   padding: 10px;
-  border-radius: 50%;
-  width: 55px;
-  height: 55px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 0.7em;
+  border-radius: 6px;
+  border: 1px solid #ddd;
+  cursor: grab;
+  list-style: none;
+  font-size: 13px;
+  color: #2c3e50; /* Texto oscuro para legibilidad */
   font-weight: bold;
-  box-shadow: 0 15px 30px rgba(0,0,0,0.5);
-  z-index: 9999;
-  pointer-events: none;
-  border: 2px solid white;
-  text-align: center;
+  touch-action: none;
+  user-select: none;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
-/* --- ESTILOS DE UI (SELECTS, GRUPOS, MODALES) --- */
-.position-group h3 {
-  background-color: #34495e;
-  color: #ecf0f1;
-  padding: 6px 10px;
-  margin: 0;
-  font-size: 0.9em;
-  border-radius: 6px 6px 0 0;
-  text-transform: uppercase;
-}
-
-.select-container label { font-size: 0.8em; color: #666; display: block; margin-bottom: 4px; }
-#team-select, #formation-select {
-  width: 100%; padding: 8px; border-radius: 5px; border: 1px solid #ccc; margin-bottom: 15px;
-}
-
-/* Pantalla de Login */
-.login-form-container {
-    background: #2c3e50;
-    border-radius: 12px;
-    padding: 30px;
-    text-align: center;
-    width: 90%;
-    max-width: 350px;
-    color: white;
-}
-
-/* Contenedor principal que centra todo */
-.login-container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: 100vh;
-  background: linear-gradient(135deg, #1e5128 0%, #000000 100%); /* Verde césped oscuro */
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-}
-
-/* La tarjeta del login */
-.login-card {
-  background: white;
-  padding: 2.5rem;
-  border-radius: 15px;
-  box-shadow: 0 10px 25px rgba(0,0,0,0.3);
-  width: 100%;
-  max-width: 400px;
-  text-align: center;
-}
-
-.login-header h1 {
-  color: #1e5128;
-  margin-bottom: 0.5rem;
-  font-size: 2rem;
-}
-
-.login-header p {
-  color: #666;
-  margin-bottom: 2rem;
-}
-
-/* Grupos de inputs */
-.input-group {
-  text-align: left;
-  margin-bottom: 1.5rem;
-}
-
-.input-group label {
-  display: block;
+.save-btn {
+  width: 100%; padding: 10px; background: #27ae60; color: white;
+  border: none; border-radius: 4px; margin-bottom: 20px; cursor: pointer;
   font-weight: bold;
-  margin-bottom: 0.5rem;
-  color: #333;
 }
 
-.input-group input {
-  width: 100%;
-  padding: 12px;
-  border: 2px solid #ddd;
-  border-radius: 8px;
-  box-sizing: border-box; /* Importante para que no se salga del contenedor */
-  transition: border-color 0.3s;
-}
-
-.input-group input:focus {
-  border-color: #1e5128;
-  outline: none;
-}
-
-/* Botón principal */
-.login-button {
-  width: 100%;
-  padding: 12px;
-  background-color: #1e5128;
-  color: white;
-  border: none;
-  border-radius: 8px;
-  font-size: 1.1rem;
-  font-weight: bold;
-  cursor: pointer;
-  transition: transform 0.2s, background-color 0.3s;
-}
-
-.login-button:hover {
-  background-color: #2a7238;
-  transform: translateY(-2px);
-}
-
-.login-footer {
-  margin-top: 1.5rem;
-}
-
-.login-footer a {
-  color: #1e5128;
-  text-decoration: none;
-  font-size: 0.9rem;
-}
-/* Modales */
+/* --- MODAL --- */
 .modal-overlay {
-    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-    background: rgba(0,0,0,0.7); display: flex; justify-content: center; align-items: center; z-index: 1000;
+  position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+  background: rgba(0, 0, 0, 0.85); display: flex; justify-content: center; align-items: center; z-index: 9999;
 }
 .modal-content {
-    background: white; padding: 20px; border-radius: 10px; text-align: center; color: #333;
-    max-width: 300px; animation: fadeInScale 0.3s ease;
+  background: white; padding: 2rem; border-radius: 15px; text-align: center;
+  max-width: 300px; width: 80%; box-shadow: 0 5px 20px rgba(0,0,0,0.5);
+  animation: modalPop 0.3s ease-out;
 }
+@keyframes modalPop { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+.modal-content p { font-size: 1.1rem; font-weight: bold; color: #333; margin-bottom: 1.5rem; }
+.modal-actions { display: flex; gap: 15px; justify-content: center; }
+.modal-button { padding: 10px 20px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; min-width: 80px; }
+.modal-button.confirm { background-color: #1e5128; color: white; }
+.modal-button.cancel { background-color: #ccc; color: #333; }
 
-/* --- RESPONSIVIDAD PARA CELULARES (XIAOMI) --- */
+/* --- AJUSTES PARA MÓVILES --- */
 @media (max-width: 768px) {
   .teams-list-panel {
-    width: 80%; /* Más ancho en móvil para mejor manejo */
+    position: absolute; right: 0; width: 80%;
+    transform: translateX(100%);
+    box-shadow: -5px 0 15px rgba(0,0,0,0.5);
   }
-
-  .player-placeholder, .player-on-field, .dragging-item-floating {
-    width: 48px;
-    height: 48px;
-  }
-
-  .player-name { font-size: 0.65em; }
-
-  .field-boundary {
-    margin: 5px;
-    border-width: 3px;
-  }
+  .teams-list-panel.panel-open { transform: translateX(0); }
+  .player-placeholder { width: 45px; height: 45px; }
 }
 
-@keyframes fadeInScale {
-    from { opacity: 0; transform: scale(0.9); }
-    to { opacity: 1; transform: scale(1); }
+.dragging-item-floating {
+  background: #3498db; color: white; padding: 8px 15px; border-radius: 20px;
+  font-size: 12px; font-weight: bold; box-shadow: 0 10px 20px rgba(0,0,0,0.4);
+  z-index: 10000; pointer-events: none; white-space: nowrap; border: 2px solid white;
 }
