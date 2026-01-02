@@ -91,6 +91,9 @@
 
 /* JUGADOR ARRASTRABLE EN LA LISTA */
 .draggable-player {
+  touch-action: none !important;
+  -webkit-user-drag: none;
+  -webkit-tap-highlight-color: transparent;
   touch-action: none; /* Bloquea el scroll nativo mientras mantienes presionado */
   -webkit-touch-callout: none;
   user-select: none;
@@ -104,8 +107,6 @@
   font-size: 13px;
   color: #2c3e50; /* Texto oscuro para legibilidad */
   font-weight: bold;
-  touch-action: none;
-  user-select: none;
   box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 

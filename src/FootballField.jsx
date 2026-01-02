@@ -117,14 +117,18 @@ const sensors = useSensors(
   };
 
  const handleDragStart = (event) => {
-  setActivePlayer(event.active.data.current);
+  // dnd-kit solo dispara este evento cuando se cumple la activationConstraint (el segundo de espera)
+  const player = event.active.data.current;
+  setActivePlayer(player);
 
-  if (window.navigator && window.navigator.vibrate) {
-    window.navigator.vibrate(100);
-    console.log("Vibrando..."); // Revisa la consola en el navegador del cel
+  if (navigator.vibrate) {
+    navigator.vibrate(100);
   }
 
-  if (window.innerWidth < 768) setIsPanelOpen(false);
+  // SOLO se cierra si el arrastre comenzó oficialmente tras el segundo
+  if (window.innerWidth < 768) {
+    setIsPanelOpen(false);
+  }
 };
 
   const handleToggleCaptain = (playerId) => {
