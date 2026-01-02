@@ -91,6 +91,9 @@
 
 /* JUGADOR ARRASTRABLE EN LA LISTA */
 .draggable-player {
+  touch-action: none; /* Bloquea el scroll nativo mientras mantienes presionado */
+  -webkit-touch-callout: none;
+  user-select: none;
   background: #ffffff; /* Fondo blanco para que destaque */
   margin-bottom: 8px;
   padding: 10px;
