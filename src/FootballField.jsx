@@ -78,7 +78,7 @@ const sensors = useSensors(
       distance: 5,
     },
   }),
-  // Sensor de Touch (Celulares): AQUÍ agregamos el retraso de 1 segundo (1000ms)
+  // Sensor de Touch (Celulares):  agregamos el retraso de 1 segundo (1000ms)
   useSensor(TouchSensor, {
     activationConstraint: {
       delay: 1000,      // Debes mantener presionado 1 segundo para que empiece el drag
@@ -266,8 +266,6 @@ const sensors = useSensors(
                     className={`player-on-field ${captainId === p.id ? 'is-captain' : ''}`}
                     style={{top: `${p.y}%`, left: `${p.x}%`}}
                     onClick={(e) => {
-                      // Un click simple para eliminar (puedes dejarlo así o cambiarlo)
-                      // Si prefieres que el click elimine, mantén tu lógica.
                     }}
                     onDoubleClick={() => handleToggleCaptain(p.id)} // DOBLE CLICK PARA CAPITÁN
                 >
@@ -307,7 +305,7 @@ const sensors = useSensors(
                   {availableFormations.map(f => <option key={f} value={f}>{f}</option>)}
                 </select>
               </div>
-{/* PEGÁ ESTO AQUÍ: Nuevo selector de DT de la Fecha */}
+{}
   <div className="select-group">
     <label>DT de la Fecha (Equipo)</label>
     <select value={selectedDT} onChange={e => {

@@ -58,17 +58,40 @@
 .player-team { display: block; font-size: 8px; color: #666; font-weight: normal; }
 
 /* --- PANEL LATERAL (LISTA DE EQUIPOS) --- */
-.teams-list-panel {
-  width: 280px;
-  background: #2c3e50; /* Cambiado a un color oscuro profesional */
-  border-left: 1px solid #34495e;
-  height: 100%;
-  overflow-y: auto;
-  padding: 15px;
-  box-sizing: border-box;
-  z-index: 100;
-  transition: transform 0.3s ease;
-  color: white; /* Texto del panel en blanco */
+.teams-list-content {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  padding: 10px;
+
+  /* ESTO ACTIVA EL SCROLL */
+  max-height: 90vh; /* Altura máxima del 90% de la pantalla */
+  overflow-y: auto;  /* Muestra el scroll solo si es necesario */
+  overflow-x: hidden; /* Evita que se mueva hacia los lados */
+
+  /* Estilizar la barra para que se vea moderna */
+  scrollbar-width: thin;
+  scrollbar-color: #444 #222;
+}
+
+/* Personalización para Chrome/Safari/Edge */
+.teams-list-content::-webkit-scrollbar {
+  width: 8px;
+}
+
+.teams-list-content::-webkit-scrollbar-track {
+  background: #1e1e1e;
+  border-radius: 10px;
+}
+
+.teams-list-content::-webkit-scrollbar-thumb {
+  background: #555;
+  border-radius: 10px;
+  border: 2px solid #1e1e1e;
+}
+
+.teams-list-content::-webkit-scrollbar-thumb:hover {
+  background: #888;
 }
 
 .teams-list-panel h3 {
