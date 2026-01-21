@@ -1,0 +1,254 @@
+[
+  {
+    "teamName": "Libertad",
+    "players": [
+      { "id": 1, "name": "Martín Silva", "position": "Portero" },
+      { "id": 2, "name": "Alexander Barboza", "position": "Defensa" },
+      { "id": 3, "name": "Néstor Giménez", "position": "Defensa" },
+      { "id": 4, "name": "Iván Piris", "position": "Defensa" },
+      { "id": 5, "name": "Diego Viera", "position": "Defensa" },
+      { "id": 6, "name": "Lucas Sanabria", "position": "Mediocampista" },
+      { "id": 7, "name": "Bautista Merlini", "position": "Mediocampista" },
+      { "id": 8, "name": "Héctor Villalba", "position": "Mediocampista" },
+      { "id": 9, "name": "Lorenzo Melgarejo", "position": "Mediocampista" },
+      { "id": 10, "name": "Óscar Cardozo", "position": "Delantero" },
+      { "id": 11, "name": "Antonio Bareiro", "position": "Delantero" },
+      { "id": 12, "name": "Roque Santa Cruz", "position": "Delantero" },
+      { "id": 13, "name": "Gustavo Aguilar", "position": "Delantero" },
+      { "id": 14, "name": "Álvaro Campuzano", "position": "Mediocampista" },
+      { "id": 15, "name": "Luis Cardozo", "position": "Defensa" },
+      { "id": 16, "name": "Rodrigo Morínigo", "position": "Portero" }
+    ]
+  },
+  {
+    "teamName": "Cerro Porteño",
+    "players": [
+      { "id": 17, "name": "Jean Fernandes", "position": "Portero" },
+      { "id": 18, "name": "Alan Benítez", "position": "Defensa" },
+      { "id": 19, "name": "Alexis Duarte", "position": "Defensa" },
+      { "id": 20, "name": "Santiago Arzamendia", "position": "Defensa" },
+      { "id": 21, "name": "Robert Piris Da Motta", "position": "Defensa" },
+      { "id": 22, "name": "Ángel Cardozo Lucena", "position": "Mediocampista" },
+      { "id": 23, "name": "Wilder Viera", "position": "Mediocampista" },
+      { "id": 24, "name": "Federico Carrizo", "position": "Mediocampista" },
+      { "id": 25, "name": "Claudio Aquino", "position": "Mediocampista" },
+      { "id": 26, "name": "Diego Churín", "position": "Delantero" },
+      { "id": 27, "name": "Fernando Fernández", "position": "Delantero" },
+      { "id": 28, "name": "Marcelo Moreno Martins", "position": "Delantero" },
+      { "id": 29, "name": "Jorge Morel", "position": "Mediocampista" },
+      { "id": 30, "name": "Juan Patiño", "position": "Defensa" },
+      { "id": 31, "name": "Cecilio Domínguez", "position": "Delantero" },
+      { "id": 32, "name": "Miguel Martínez", "position": "Portero" }
+    ]
+  },
+  {
+    "teamName": "Olimpia",
+    "players": [
+      { "id": 33, "name": "Alfredo Aguilar", "position": "Portero" },
+      { "id": 34, "name": "Sergio Otálvaro", "position": "Defensa" },
+      { "id": 35, "name": "Luis Zárate", "position": "Defensa" },
+      { "id": 36, "name": "Junior Barreto", "position": "Defensa" },
+      { "id": 37, "name": "Iván Torres", "position": "Defensa" },
+      { "id": 38, "name": "Richard Ortíz", "position": "Mediocampista" },
+      { "id": 39, "name": "Hugo Quintana", "position": "Mediocampista" },
+      { "id": 40, "name": "Alejandro Silva", "position": "Mediocampista" },
+      { "id": 41, "name": "Ramón Sosa", "position": "Mediocampista" },
+      { "id": 42, "name": "Guillermo Paiva", "position": "Delantero" },
+      { "id": 43, "name": "Facundo Bruera", "position": "Delantero" },
+      { "id": 44, "name": "Derlis González", "position": "Delantero" },
+      { "id": 45, "name": "Fernando Cardozo", "position": "Delantero" },
+      { "id": 46, "name": "Saúl Salcedo", "position": "Defensa" },
+      { "id": 47, "name": "Marcos Gómez", "position": "Mediocampista" },
+      { "id": 48, "name": "Gastón Olveira", "position": "Portero" }
+    ]
+  },
+  {
+    "teamName": "Guaraní",
+    "players": [
+      { "id": 49, "name": "Gaspar Servio", "position": "Portero" },
+      { "id": 50, "name": "Marcos Cáceres", "position": "Defensa" },
+      { "id": 51, "name": "Fernando Román", "position": "Defensa" },
+      { "id": 52, "name": "Rubén Ríos", "position": "Defensa" },
+      { "id": 53, "name": "Jorge Benítez", "position": "Defensa" },
+      { "id": 54, "name": "Marcelo González", "position": "Mediocampista" },
+      { "id": 55, "name": "Luis Fariña", "position": "Mediocampista" },
+      { "id": 56, "name": "Rodrigo Bogarín", "position": "Mediocampista" },
+      { "id": 57, "name": "Juan Cáceres", "position": "Mediocampista" },
+      { "id": 58, "name": "Néstor Camacho", "position": "Delantero" },
+      { "id": 59, "name": "Federico Santander", "position": "Delantero" },
+      { "id": 60, "name": "Raúl Bobadilla", "position": "Delantero" },
+      { "id": 61, "name": "Walter González", "position": "Delantero" },
+      { "id": 62, "name": "José Florentín", "position": "Mediocampista" },
+      { "id": 63, "name": "Fernando Benítez", "position": "Defensa" },
+      { "id": 64, "name": "Deulis Gamarra", "position": "Portero" }
+    ]
+  },
+  {
+    "teamName": "Nacional",
+    "players": [
+      { "id": 65, "name": "Santiago Rojas", "position": "Portero" },
+      { "id": 66, "name": "Claudio Núñez", "position": "Defensa" },
+      { "id": 67, "name": "Fernando Agustini", "position": "Defensa" },
+      { "id": 68, "name": "Richard Prieto", "position": "Defensa" },
+      { "id": 69, "name": "Gastón Benítez", "position": "Defensa" },
+      { "id": 70, "name": "Edgardo Orzusa", "position": "Mediocampista" },
+      { "id": 71, "name": "Mathias Martínez", "position": "Mediocampista" },
+      { "id": 72, "name": "Carlos Arrúa", "position": "Mediocampista" },
+      { "id": 73, "name": "Gustavo Aguilar", "position": "Delantero" },
+      { "id": 74, "name": "Orlando Gaona Lugo", "position": "Delantero" },
+      { "id": 75, "name": "Facundo Espínola", "position": "Delantero" },
+      { "id": 76, "name": "Carlos González", "position": "Mediocampista" },
+      { "id": 77, "name": "Cristhian Ocampos", "position": "Delantero" },
+      { "id": 78, "name": "Ismael Benegas", "position": "Defensa" },
+      { "id": 79, "name": "Héctor Espínola", "position": "Portero" },
+      { "id": 80, "name": "Juan Alfaro", "position": "Mediocampista" }
+    ]
+  },
+  {
+    "teamName": "Sportivo Luqueño",
+    "players": [
+      { "id": 81, "name": "Héctor Espínola", "position": "Portero" },
+      { "id": 82, "name": "Pablo Aguilar", "position": "Defensa" },
+      { "id": 83, "name": "Rodolfo Gamarra", "position": "Defensa" },
+      { "id": 84, "name": "Jorge Paredes", "position": "Defensa" },
+      { "id": 85, "name": "Paulo Lima", "position": "Defensa" },
+      { "id": 86, "name": "Jorge Mendoza", "position": "Mediocampista" },
+      { "id": 87, "name": "Joel Saldivar", "position": "Mediocampista" },
+      { "id": 88, "name": "Julio Báez", "position": "Mediocampista" },
+      { "id": 89, "name": "Marcelo Pérez", "position": "Mediocampista" },
+      { "id": 90, "name": "Paul Charpentier", "position": "Delantero" },
+      { "id": 91, "name": "Enrique Borja", "position": "Delantero" },
+      { "id": 92, "name": "Lucas Barrios", "position": "Delantero" },
+      { "id": 93, "name": "Rodrigo Rojas", "position": "Delantero" },
+      { "id": 94, "name": "Álex Arce", "position": "Mediocampista" },
+      { "id": 95, "name": "Juan Pablo Pumpido", "position": "Defensa" },
+      { "id": 96, "name": "Gonzalo Falcón", "position": "Portero" }
+    ]
+  },
+  {
+    "teamName": "General Caballero JLM",
+    "players": [
+      { "id": 97, "name": "Gustavo Bobadilla", "position": "Portero" },
+      { "id": 98, "name": "Junior Barreto", "position": "Defensa" },
+      { "id": 99, "name": "Manuel Romero", "position": "Defensa" },
+      { "id": 100, "name": "Juan Vera", "position": "Defensa" },
+      { "id": 101, "name": "Derlis Rodríguez", "position": "Defensa" },
+      { "id": 102, "name": "José Vera", "position": "Mediocampista" },
+      { "id": 103, "name": "Aldo Maíz", "position": "Mediocampista" },
+      { "id": 104, "name": "Tobías Castellano", "position": "Mediocampista" },
+      { "id": 105, "name": "Teodoro Arce", "position": "Mediocampista" },
+      { "id": 106, "name": "Clementino González", "position": "Delantero" },
+      { "id": 107, "name": "Guillermo Hauché", "position": "Delantero" },
+      { "id": 108, "name": "Derlis González", "position": "Delantero" },
+      { "id": 109, "name": "Fernando Castellano", "position": "Delantero" },
+      { "id": 110, "name": "Fabián Balbuena", "position": "Defensa" },
+      { "id": 111, "name": "Kevin Giménez", "position": "Defensa" },
+      { "id": 112, "name": "Juanito Alfonso", "position": "Portero" }
+    ]
+  },
+  {
+    "teamName": "Sportivo Ameliano",
+    "players": [
+      { "id": 113, "name": "Aldo Arzamendia", "position": "Portero" },
+      { "id": 114, "name": "Walter Cabrera", "position": "Defensa" },
+      { "id": 115, "name": "Hugo Benítez", "position": "Defensa" },
+      { "id": 116, "name": "Juan Pablo Vera", "position": "Defensa" },
+      { "id": 117, "name": "Marcos Cáceres", "position": "Defensa" },
+      { "id": 118, "name": "Fredy Vera", "position": "Mediocampista" },
+      { "id": 119, "name": "Silvio Torales", "position": "Mediocampista" },
+      { "id": 120, "name": "Edgar Zaracho", "position": "Mediocampista" },
+      { "id": 121, "name": "Richard Torales", "position": "Mediocampista" },
+      { "id": 122, "name": "Elvio Vera", "position": "Delantero" },
+      { "id": 123, "name": "Pablo Zeballos", "position": "Delantero" },
+      { "id": 124, "name": "Sergio Bareiro", "position": "Delantero" },
+      { "id": 125, "name": "Óscar Velázquez", "position": "Defensa" },
+      { "id": 126, "name": "Julio González", "position": "Delantero" },
+      { "id": 127, "name": "Diego Barreto", "position": "Mediocampista" },
+      { "id": 128, "name": "Jorge Recalde", "position": "Portero" }
+    ]
+  },
+  {
+    "teamName": "Sportivo Trinidense",
+    "players": [
+      { "id": 129, "name": "Víctor Centurión", "position": "Portero" },
+      { "id": 130, "name": "Sergio Ojeda", "position": "Defensa" },
+      { "id": 131, "name": "Jorge Montiel", "position": "Defensa" },
+      { "id": 132, "name": "Armando González", "position": "Defensa" },
+      { "id": 133, "name": "Juan Vera", "position": "Defensa" },
+      { "id": 134, "name": "Pedro Arce", "position": "Mediocampista" },
+      { "id": 135, "name": "Marcos Riveros", "position": "Mediocampista" },
+      { "id": 136, "name": "Álex Arce", "position": "Mediocampista" },
+      { "id": 137, "name": "Christian Riveros", "position": "Mediocampista" },
+      { "id": 138, "name": "Rodrigo Arévalo", "position": "Delantero" },
+      { "id": 139, "name": "Joel Román", "position": "Delantero" },
+      { "id": 140, "name": "Óscar Giménez", "position": "Delantero" },
+      { "id": 141, "name": "Derlis Acuña", "position": "Delantero" },
+      { "id": 142, "name": "Carlos González", "position": "Defensa" },
+      { "id": 143, "name": "Pablo Espinoza", "position": "Mediocampista" },
+      { "id": 144, "name": "Pablo Gavilán", "position": "Portero" }
+    ]
+  },
+  {
+    "teamName": "Tacuary",
+    "players": [
+      { "id": 145, "name": "Aldo Benítez", "position": "Portero" },
+      { "id": 146, "name": "Luis Zárate", "position": "Defensa" },
+      { "id": 147, "name": "Walter Clar", "position": "Defensa" },
+      { "id": 148, "name": "Hugo Benítez", "position": "Defensa" },
+      { "id": 149, "name": "Alexis Villalba", "position": "Defensa" },
+      { "id": 150, "name": "Marcelo Paredes", "position": "Mediocampista" },
+      { "id": 151, "name": "Nelson Sanabria", "position": "Mediocampista" },
+      { "id": 152, "name": "Iván Saldivar", "position": "Mediocampista" },
+      { "id": 153, "name": "César Villagra", "position": "Mediocampista" },
+      { "id": 154, "name": "Renzo Melgarejo", "position": "Delantero" },
+      { "id": 155, "name": "Rodrigo Villalba", "position": "Delantero" },
+      { "id": 156, "name": "José Viveros", "position": "Delantero" },
+      { "id": 157, "name": "Lucas Gómez", "position": "Delantero" },
+      { "id": 158, "name": "Guido Gómez", "position": "Defensa" },
+      { "id": 159, "name": "Pablo Meza", "position": "Defensa" },
+      { "id": 160, "name": "Carlos Servín", "position": "Portero" }
+    ]
+  },
+  {
+    "teamName": "Guaireña FC",
+    "players": [
+      { "id": 161, "name": "Aldo Pérez", "position": "Portero" },
+      { "id": 162, "name": "Rodrigo Alborno", "position": "Defensa" },
+      { "id": 163, "name": "Miguel Paniagua", "position": "Defensa" },
+      { "id": 164, "name": "Félix Benítez", "position": "Defensa" },
+      { "id": 165, "name": "Elias Godoy", "position": "Defensa" },
+      { "id": 166, "name": "Juan Aguilar", "position": "Mediocampista" },
+      { "id": 167, "name": "Rosalino Toledo", "position": "Mediocampista" },
+      { "id": 168, "name": "Diego Godoy", "position": "Mediocampista" },
+      { "id": 169, "name": "Marcelo Benítez", "position": "Mediocampista" },
+      { "id": 170, "name": "Carlos Duarte", "position": "Delantero" },
+      { "id": 171, "name": "José Verdun", "position": "Delantero" },
+      { "id": 172, "name": "Nildo Viera", "position": "Delantero" },
+      { "id": 173, "name": "Milciades Portillo", "position": "Defensa" },
+      { "id": 174, "name": "Antonio Marín", "position": "Delantero" },
+      { "id": 175, "name": "Pablo Espinoza", "position": "Mediocampista" },
+      { "id": 176, "name": "Ángel Benítez", "position": "Portero" }
+    ]
+  },
+  {
+    "teamName": "Resistencia SC",
+    "players": [
+      { "id": 177, "name": "Rhuan", "position": "Portero" },
+      { "id": 178, "name": "Juan Ojeda", "position": "Defensa" },
+      { "id": 179, "name": "Alexis Villalba", "position": "Defensa" },
+      { "id": 180, "name": "Alexis Villalba", "position": "Defensa" },
+      { "id": 181, "name": "Rodrigo Burgos", "position": "Defensa" },
+      { "id": 182, "name": "Edgardo Orzusa", "position": "Mediocampista" },
+      { "id": 183, "name": "Jorge Colmán", "position": "Mediocampista" },
+      { "id": 184, "name": "Fernando Ovelar", "position": "Mediocampista" },
+      { "id": 185, "name": "Diego Martínez", "position": "Mediocampista" },
+      { "id": 186, "name": "Rodrigo Ruiz Díaz", "position": "Delantero" },
+      { "id": 187, "name": "Alan Sombra", "position": "Delantero" },
+      { "id": 188, "name": "Nelson Da Silva", "position": "Delantero" },
+      { "id": 189, "name": "Milton Maciel", "position": "Delantero" },
+      { "id": 190, "name": "José González", "position": "Defensa" },
+      { "id": 191, "name": "Fernando Garcete", "position": "Mediocampista" },
+      { "id": 192, "name": "Sebastián Pereira", "position": "Portero" }
+    ]
+  }
+]
