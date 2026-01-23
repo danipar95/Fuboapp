@@ -119,10 +119,6 @@ body {
   bottom: 12vh;
 }
 
-/* Arcos de penal y esquinas */
-/* (Estos son los elementos más complejos, la versión anterior podría tener errores de `transform` o `clip-path`).
-Para simplificar, se pueden quitar temporalmente o re-evaluar sus estilos de forma independiente.
-Te sugiero empezar sin ellos y agregarlos una vez que el resto del campo esté bien.) */
 
 /* Porterías */
 .goal {

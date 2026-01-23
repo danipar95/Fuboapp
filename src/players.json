@@ -165,7 +165,12 @@
       { "id": 146, "name": "Alan Tobías Morinigo", "position": "Defensa" },
       { "id": 147, "name": "Bryan Bentaberry", "position": "Defensa" },
       { "id": 148, "name": "Junior Barreto", "position": "Defensa" },
-      { "id": 149, "name": "Alan Paredes", "position": "Defensa" }
+      { "id": 149, "name": "Alan Paredes", "position": "Defensa" },
+      { "id": 422, "name": "Facundo Insfran", "position": "Portero" },
+      { "id": 423, "name": "Gastón Olveira", "position": "Portero" },
+      { "id": 424, "name": "Marino Arzamendia", "position": "Portero" },
+      { "id": 425, "name": "Rodrigo Frutos", "position": "Portero" },
+      { "id": 426, "name": "Sebastian Lentinelly", "position": "Portero" }
     ]
   },
   {

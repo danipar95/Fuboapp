@@ -117,7 +117,7 @@ const sensors = useSensors(
   };
 
  const handleDragStart = (event) => {
-  // dnd-kit solo dispara este evento cuando se cumple la activationConstraint (el segundo de espera)
+  // dnd-kit solo dispara este evento cuando se cumple la activationConstraint
   const player = event.active.data.current;
   setActivePlayer(player);
 
@@ -133,7 +133,7 @@ const sensors = useSensors(
 
   const handleToggleCaptain = (playerId) => {
   if (captainId === playerId) {
-    setCaptainId(null); // Si ya es capitán, lo quita
+    setCaptainId(null); // Si ya es capitán,  quita
   } else {
     setCaptainId(playerId); // Asigna el nuevo capitán
   }
@@ -149,7 +149,7 @@ const sensors = useSensors(
 
     if (onFieldPlayers.some(p => p.id === playerData.id)) return setModalMessage("Ya está en el campo");
 
-    // --- NUEVA LÓGICA DE VALIDACIÓN ---
+    // ---  LÓGICA DE VALIDACIÓN ---
     const teamCount = onFieldPlayers.filter(p => p.teamName === playerData.teamName).length;
 
     // Si el equipo del jugador es el mismo que el del DT seleccionado
@@ -179,7 +179,7 @@ const sensors = useSensors(
       const dataToSave = {
         players: onFieldPlayers,     // Array de jugadores en cancha
         captainId: captainId,       // ID del jugador elegido como capitán
-        formation: selectedFormation, // La formación actual (ej: "4-4-2")
+        formation: selectedFormation, // La formación actual
         selectedDT: selectedDT, // <--- Guardar DT
         timestamp: fechaFormateada
       };
