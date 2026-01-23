@@ -21,7 +21,8 @@ const availableFormations = ["5-3-2", "5-4-1", "4-4-2", "4-3-3", "4-5-1", "3-5-2
 
 const hardcodedUsers = {
   "Blackbird": "Sergio", "CMP": "Danilo", "Danipar": "Tulio", "SilverCrows": "Roman",
-  "Invernalia": "Barrios", "Piris": "Alan", "Red Devils": "Marzio", "LORD": "RuizDiaz"
+  "Invernalia": "Barrios", "Piris": "Alan", "Red Devils": "Marzio", "LORD": "RuizDiaz",
+   "Milico": "Rodrigo", "Tifosi": "Pino", "Pynandi": "Duarte"
 };
 
 const formationPositions = {
