@@ -168,6 +168,21 @@ const sensors = useSensors(
 };
 
   const handleSaveTeam = () => {
+
+    if (onFieldPlayers.length !== 11) {
+      setModalMessage(`Faltan jugadores. Tienes ${onFieldPlayers.length} de 11 en el campo.`);
+      return;
+    }
+
+    if (!captainId) {
+      setModalMessage("Debes asignar un capitán (haz doble clic sobre un jugador en el campo).");
+      return;
+    }
+
+    if (!selectedDT || selectedDT === "") {
+      setModalMessage("Debes seleccionar un DT de la fecha en el panel lateral.");
+      return;
+    }
     // Generar la fecha y hora actual
   const ahora = new Date();
   const fechaFormateada = ahora.toLocaleDateString() + " - " + ahora.toLocaleTimeString();
