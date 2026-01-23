@@ -20,7 +20,7 @@ const availableFormations = ["5-3-2", "5-4-1", "4-4-2", "4-3-3", "4-5-1", "3-5-2
 
 
 const hardcodedUsers = {
-  "Blackbird": "Sergio", "CMP": "Danilo", "Danipar": "Tulio", "Fabrica": "Maxi",
+  "Blackbird": "Sergio", "CMP": "Danilo", "Danipar": "Tulio", "La Fabrica": "Maxi",
   "Invernalia": "Barrios", "Piris": "Alan", "Red Devils": "Marzio", "LORD": "RuizDiaz",
    "Milico": "Rodrigo", "Tifosi": "Pino", "Pynandi": "Duarte"
 };
