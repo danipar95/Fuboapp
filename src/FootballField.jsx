@@ -154,12 +154,22 @@ useEffect(() => {
     }
   };
 
-  const handleLogout = () => {
+const handleLogout = () => {
+  if (onFieldPlayers.length > 0) {
+    setConfirmModal({
+      message: '¿Cerrar sesión? Perderás el equipo que no hayas descargado.',
+      onConfirm: () => {
+        setLoggedInUser(null);
+        setOnFieldPlayers([]);
+        setSelectedDT("");
+        setConfirmModal(null);
+      },
+      onCancel: () => setConfirmModal(null)
+    });
+  } else {
     setLoggedInUser(null);
-    setOnFieldPlayers([]);
-    setSelectedDT("");
-  };
-
+  }
+};
   const handleDragStart = (event) => {
     const player = event.active.data.current;
     setActivePlayer(player);
