@@ -34,12 +34,20 @@
   position: relative;
   background-color: #2e7d32;
   border: 4px solid white;
-  margin: 10px;
+  border-radius: 10px;
+
+  /* Definimos un tamaño base grande para PC */
+  width: 600px;
+  height: 800px;
+
+  /* Esto hace que en pantallas chicas no se rompa */
+  max-width: 95%;
+  max-height: 80vh;
+
   overflow: hidden;
   background-image: linear-gradient(rgba(255,255,255,0.05) 2px, transparent 2px);
   background-size: 100% 10%;
-  aspect-ratio: 3/4; /* Mantiene proporción de cancha */
-  flex-grow: 1;
+  box-shadow: 0 0 50px rgba(0,0,0,0.3);
 }
 
 .halfway-line { position: absolute; top: 50%; width: 100%; height: 2px; background: white; }
@@ -59,14 +67,15 @@
 .player-team { display: block; font-size: 8px; color: #666; font-weight: normal; }
 
 /* PIE DE FOTO NEGRO */
+/* Ajustamos el pie de foto para que coincida con el ancho de la cancha */
 .photo-caption-footer {
   background-color: #000000;
   color: #ffffff;
   padding: 15px 20px;
-  display: flex;
-  flex-direction: column;
-  gap: 5px;
   border-top: 2px solid #333;
+  width: 600px; /* Mismo ancho que .field-boundary */
+  max-width: 95%;
+  box-sizing: border-box;
 }
 .caption-top { display: flex; justify-content: space-between; align-items: center; }
 .caption-user { color: #ffd700; font-size: 1.3rem; font-weight: 900; }

@@ -89,6 +89,27 @@ const FootballField = () => {
     }
   }, [loggedInUser]);
 
+
+
+useEffect(() => {
+  const handleBeforeUnload = (e) => {
+    // Solo preguntar si hay jugadores en el campo para evitar molestias innecesarias
+    if (onFieldPlayers.length > 0) {
+      const message = "¿Seguro que quieres salir? Se perderán los cambios no guardados.";
+      e.preventDefault();
+      e.returnValue = message; // Requerido para Chrome / Edge
+      return message; // Requerido para otros navegadores
+    }
+  };
+
+  window.addEventListener('beforeunload', handleBeforeUnload);
+
+  // Limpiar el evento cuando el componente se desmonte
+  return () => {
+    window.removeEventListener('beforeunload', handleBeforeUnload);
+  };
+}, [onFieldPlayers]); // Se actualiza cada vez que cambia la cantidad de jugadores
+
   // --- LÓGICA DE VALIDACIÓN Y MOVIMIENTO DE FORMACIÓN ---
   const isFormationDisabled = (formationName) => {
     if (onFieldPlayers.length === 0) return false;
