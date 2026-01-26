@@ -18,11 +18,10 @@ import { saveAs } from 'file-saver';
 
 const availableFormations = ["5-3-2", "5-4-1", "4-4-2", "4-3-3", "4-5-1", "3-5-2", "3-4-3"];
 
-
 const hardcodedUsers = {
   "Blackbird": "Sergio", "CMP": "Danilo", "Danipar": "Tulio", "La Fabrica": "Maxi",
   "Invernalia": "Barrios", "Piris": "Alan", "Red Devils": "Marzio", "LORD": "RuizDiaz",
-   "Milico": "Rodrigo", "Tifosi": "Pino", "Pynandi": "Duarte"
+  "Milico": "Rodrigo", "Tifosi": "Pino", "Pynandi": "Duarte"
 };
 
 const formationPositions = {
@@ -72,34 +71,57 @@ const FootballField = () => {
   const [selectedDT, setSelectedDT] = useState("");
   const [timestamp, setTimestamp] = useState("");
 
-const sensors = useSensors(
-  // Sensor de Mouse: se activa tras moverlo 5 píxeles (para evitar clicks accidentales)
-  useSensor(PointerSensor, {
-    activationConstraint: {
-      distance: 5,
-    },
-  }),
-  // Sensor de Touch (Celulares):  agregamos el retraso de 1 segundo (1000ms)
-  useSensor(TouchSensor, {
-    activationConstraint: {
-      delay: 1000,      // Debes mantener presionado 1 segundo para que empiece el drag
-      tolerance: 10,     // Si mueves el dedo más de 5px antes del segundo, se cancela (permite scroll)
-    },
-  })
-);
+  const sensors = useSensors(
+    useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
+    useSensor(TouchSensor, { activationConstraint: { delay: 1000, tolerance: 10 } })
+  );
 
- useEffect(() => {
-  if (loggedInUser) {
-    const savedData = localStorage.getItem(`team-${loggedInUser}`);
-    if (savedData) {
-      const parsed = JSON.parse(savedData);
-      setOnFieldPlayers(parsed.players || []);
-      setCaptainId(parsed.captainId || null);
-      setSelectedDT(parsed.selectedDT || ""); // <--- Recuperar DT
-      if (parsed.formation) setSelectedFormation(parsed.formation);
+  useEffect(() => {
+    if (loggedInUser) {
+      const savedData = localStorage.getItem(`team-${loggedInUser}`);
+      if (savedData) {
+        const parsed = JSON.parse(savedData);
+        setOnFieldPlayers(parsed.players || []);
+        setCaptainId(parsed.captainId || null);
+        setSelectedDT(parsed.selectedDT || "");
+        if (parsed.formation) setSelectedFormation(parsed.formation);
+      }
     }
-  }
-}, [loggedInUser]);
+  }, [loggedInUser]);
+
+  // --- LÓGICA DE VALIDACIÓN Y MOVIMIENTO DE FORMACIÓN ---
+  const isFormationDisabled = (formationName) => {
+    if (onFieldPlayers.length === 0) return false;
+    const currentCounts = ['Portero', 'Defensa', 'Mediocampista', 'Delantero'].reduce((acc, pos) => {
+      acc[pos] = onFieldPlayers.filter(p => p.position === pos).length;
+      return acc;
+    }, {});
+    const targetPositions = formationPositions[formationName];
+    const targetCounts = ['Portero', 'Defensa', 'Mediocampista', 'Delantero'].reduce((acc, pos) => {
+      acc[pos] = targetPositions.filter(p => p.pos === pos).length;
+      return acc;
+    }, {});
+    return Object.keys(currentCounts).some(pos => currentCounts[pos] > targetCounts[pos]);
+  };
+
+  const handleFormationChange = (newFormation) => {
+    if (isFormationDisabled(newFormation)) return;
+
+    // Mover jugadores automáticamente a las nuevas posiciones
+    const newPositions = [...formationPositions[newFormation]];
+    const updatedPlayers = onFieldPlayers.map(player => {
+      const slotIndex = newPositions.findIndex(slot => slot.pos === player.position);
+      if (slotIndex !== -1) {
+        const slot = newPositions[slotIndex];
+        newPositions.splice(slotIndex, 1); // Remover slot usado
+        return { ...player, x: slot.x, y: slot.y };
+      }
+      return player;
+    });
+
+    setOnFieldPlayers(updatedPlayers);
+    setSelectedFormation(newFormation);
+  };
 
   const handleLogin = (e) => {
     e.preventDefault();
@@ -117,123 +139,73 @@ const sensors = useSensors(
     setSelectedDT("");
   };
 
- const handleDragStart = (event) => {
-  // dnd-kit solo dispara este evento cuando se cumple la activationConstraint
-  const player = event.active.data.current;
-  setActivePlayer(player);
-
-  if (navigator.vibrate) {
-    navigator.vibrate(100);
-  }
-
-  // SOLO se cierra si el arrastre comenzó oficialmente tras el segundo
-  if (window.innerWidth < 768) {
-    setIsPanelOpen(false);
-  }
-};
-
-  const handleToggleCaptain = (playerId) => {
-  if (captainId === playerId) {
-    setCaptainId(null); // Si ya es capitán,  quita
-  } else {
-    setCaptainId(playerId); // Asigna el nuevo capitán
-  }
-};
+  const handleDragStart = (event) => {
+    const player = event.active.data.current;
+    setActivePlayer(player);
+    if (navigator.vibrate) navigator.vibrate(100);
+    if (window.innerWidth < 768) setIsPanelOpen(false);
+  };
 
   const handleDragEnd = (event) => {
-  const { over, active } = event;
-  setActivePlayer(null);
-  setIsPanelOpen(true);
-  if (over && active) {
-    const playerData = active.data.current;
-    const targetPos = over.data.current;
-
-    if (onFieldPlayers.some(p => p.id === playerData.id)) return setModalMessage("Ya está en el campo");
-
-    // ---  LÓGICA DE VALIDACIÓN ---
-    const teamCount = onFieldPlayers.filter(p => p.teamName === playerData.teamName).length;
-
-    // Si el equipo del jugador es el mismo que el del DT seleccionado
-    if (playerData.teamName === selectedDT) {
-      if (teamCount >= 1) {
-        return setModalMessage(`Solo podés poner 1 jugador de ${playerData.teamName} porque ya elegiste a su DT.`);
+    const { over, active } = event;
+    setActivePlayer(null);
+    setIsPanelOpen(true);
+    if (over && active) {
+      const playerData = active.data.current;
+      const targetPos = over.data.current;
+      if (onFieldPlayers.some(p => p.id === playerData.id)) return setModalMessage("Ya está en el campo");
+      const teamCount = onFieldPlayers.filter(p => p.teamName === playerData.teamName).length;
+      if (playerData.teamName === selectedDT) {
+        if (teamCount >= 1) return setModalMessage(`Solo podés poner 1 de ${playerData.teamName} por el DT.`);
+      } else {
+        if (teamCount >= 2) return setModalMessage(`Máximo 2 de ${playerData.teamName}`);
       }
-    } else {
-      if (teamCount >= 2) {
-        return setModalMessage(`Máximo 2 jugadores de ${playerData.teamName}`);
-      }
+      if (playerData.position !== targetPos.position) return setModalMessage("Posición incorrecta");
+      setOnFieldPlayers([...onFieldPlayers, { ...playerData, x: targetPos.left, y: targetPos.top }]);
     }
-    if (playerData.position !== targetPos.position) return setModalMessage("Posición incorrecta");
-    setOnFieldPlayers([...onFieldPlayers, { ...playerData, x: targetPos.left, y: targetPos.top }]);
-  }
-};
+  };
 
   const handleSaveTeam = () => {
+    if (onFieldPlayers.length !== 11) return setModalMessage(`Faltan jugadores (${onFieldPlayers.length}/11).`);
+    if (!captainId) return setModalMessage("Asigna un capitán (doble clic).");
+    if (!selectedDT) return setModalMessage("Selecciona un DT.");
 
-    if (onFieldPlayers.length !== 11) {
-      setModalMessage(`Faltan jugadores. Tienes ${onFieldPlayers.length} de 11 en el campo.`);
-      return;
-    }
+    const ahora = new Date();
+    const fechaFormateada = ahora.toLocaleDateString() + " - " + ahora.toLocaleTimeString();
+    setTimestamp(fechaFormateada);
 
-    if (!captainId) {
-      setModalMessage("Debes asignar un capitán (haz doble clic sobre un jugador en el campo).");
-      return;
-    }
+    setConfirmModal({
+      message: '¿Guardar equipo y descargar imagen?',
+      onConfirm: () => {
+        const dataToSave = {
+          players: onFieldPlayers,
+          captainId: captainId,
+          formation: selectedFormation,
+          selectedDT: selectedDT,
+          timestamp: fechaFormateada
+        };
+        localStorage.setItem(`team-${loggedInUser}`, JSON.stringify(dataToSave));
 
-    if (!selectedDT || selectedDT === "") {
-      setModalMessage("Debes seleccionar un DT de la fecha en el panel lateral.");
-      return;
-    }
-    // Generar la fecha y hora actual
-  const ahora = new Date();
-  const fechaFormateada = ahora.toLocaleDateString() + " - " + ahora.toLocaleTimeString();
-  setTimestamp(fechaFormateada); // Guardamos la hora en el estado
-  setConfirmModal({
-    message: '¿Guardar equipo y descargar imagen?',
-    onConfirm: () => {
-      // 1. Creamos un objeto que agrupe toda la información
-      const dataToSave = {
-        players: onFieldPlayers,     // Array de jugadores en cancha
-        captainId: captainId,       // ID del jugador elegido como capitán
-        formation: selectedFormation, // La formación actual
-        selectedDT: selectedDT, // <--- Guardar DT
-        timestamp: fechaFormateada
-      };
-
-      // 2. Lo convertimos a string y lo guardamos bajo la llave del usuario logueado
-      localStorage.setItem(`team-${loggedInUser}`, JSON.stringify(dataToSave));
-
-      // 3. (Opcional) Lógica para generar la imagen con html2canvas
-      setTimeout(() => {
-        const input = document.getElementById('field-boundary');
-        html2canvas(input, { useCORS: true, backgroundColor: "#2e7d32" }).then(canvas => {
-          canvas.toBlob(blob => saveAs(blob, `${loggedInUser}-equipo.png`));
-        });
-        setConfirmModal(null);
-      }, 100);
-    },
-    onCancel: () => {
-      setConfirmModal(null);
-      setTimestamp(""); // Limpiamos si cancela
-    }
-  });
-};
+        setTimeout(() => {
+          const input = document.getElementById('capture-area');
+          html2canvas(input, { useCORS: true, backgroundColor: "#000000", scale: 2 }).then(canvas => {
+            canvas.toBlob(blob => saveAs(blob, `${loggedInUser}-equipo.png`));
+          });
+          setConfirmModal(null);
+        }, 100);
+      },
+      onCancel: () => { setConfirmModal(null); setTimestamp(""); }
+    });
+  };
 
   if (!loggedInUser) {
     return (
       <div className="login-container">
-        {modalMessage && <Modal message={modalMessage} onClose={() => setModalMessage(null)} />}
         <div className="login-card">
           <h1>⚽ FUBOLITO</h1>
           <form onSubmit={handleLogin} className="login-form">
-            <div className="input-group">
-              <label>Usuario</label>
-              <input type="text" value={username} onChange={e => setUsername(e.target.value)} required />
-            </div>
-            <div className="input-group">
-              <label>Pass</label>
-              <input type="password" value={password} onChange={e => setPassword(e.target.value)} required />
-            </div>
+            <div className="input-group"><label>Usuario</label><input type="text" value={username} onChange={e=>setUsername(e.target.value)} required /></div>
+            <div className="input-group"><label>Pass</label><input type="password" value={password} onChange={e=>setPassword(e.target.value)} required /></div>
             <button type="submit" className="login-button">Entrar</button>
           </form>
         </div>
@@ -245,117 +217,64 @@ const sensors = useSensors(
     <DndContext sensors={sensors} onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
       <div className="field-container">
         {modalMessage && <Modal message={modalMessage} onClose={() => setModalMessage(null)} />}
-        {confirmModal && (
-          <Modal
-            message={confirmModal.message}
-            onClose={confirmModal.onCancel}
-            onConfirm={confirmModal.onConfirm}
-            showButtons={true}
-          />
-        )}
+        {confirmModal && <Modal message={confirmModal.message} onClose={confirmModal.onCancel} onConfirm={confirmModal.onConfirm} showButtons={true} />}
 
         <div className="field-and-panel-wrapper">
-          <div className="field-boundary" id="field-boundary">
-            <div className="field-info-overlay">
-              <span className="formation-badge">{selectedFormation}</span>
-              <span className="user-badge">Equipo: {loggedInUser}</span>
-              {selectedDT && <span className="dt-badge">DT: {selectedDT}</span>}
-              {timestamp && <span className="timestamp-badge">{timestamp}</span>}
-            </div>
-            {/* TEXTO DE FORMACIÓN PARA LA IMAGEN */}
-            <div className="field-info-overlay">
-              <span className="formation-badge">{selectedFormation}</span>
-            </div>
-
-            <div className="halfway-line"></div>
-            <div className="center-circle"></div>
-
-            {formationPositions[selectedFormation].map((pos, i) => {
-              const occupied = onFieldPlayers.some(p => p.x === pos.x && p.y === pos.y);
-              return !occupied &&
-                  <PlayerPlaceholder key={i} id={`slot-${i}`} position={pos.pos} top={pos.y} left={pos.x}/>;
-            })}
-
-            {onFieldPlayers.map(p => (
-                <div
-                    key={p.id}
-                    className={`player-on-field ${captainId === p.id ? 'is-captain' : ''}`}
-                    style={{top: `${p.y}%`, left: `${p.x}%`}}
-                    onClick={(e) => {
-                    }}
-                    onDoubleClick={() => handleToggleCaptain(p.id)} // DOBLE CLICK PARA CAPITÁN
-                >
+          <div id="capture-area" className="capture-wrapper">
+            <div className="field-boundary" id="field-boundary">
+              <div className="halfway-line"></div><div className="center-circle"></div>
+              {formationPositions[selectedFormation].map((pos, i) => {
+                const occupied = onFieldPlayers.some(p => p.x === pos.x && p.y === pos.y);
+                return !occupied && <PlayerPlaceholder key={i} id={`slot-${i}`} position={pos.pos} top={pos.y} left={pos.x}/>;
+              })}
+              {onFieldPlayers.map(p => (
+                <div key={p.id} className={`player-on-field ${captainId === p.id ? 'is-captain' : ''}`} style={{top: `${p.y}%`, left: `${p.x}%`}} onDoubleClick={() => setCaptainId(p.id === captainId ? null : p.id)}>
                   {captainId === p.id && <span className="captain-armband">©</span>}
                   <span className="player-name">{p.name}</span>
                   <span className="player-team">{p.teamName}</span>
-
-                  {/* Botón pequeño de borrar para no confundir con el doble click */}
-                  <button
-                      className="delete-player-btn"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setOnFieldPlayers(onFieldPlayers.filter(pl => pl.id !== p.id));
-                        if (captainId === p.id) setCaptainId(null);
-                      }}
-                  >×
-                  </button>
+                  <button className="delete-player-btn" onClick={(e) => { e.stopPropagation(); setOnFieldPlayers(onFieldPlayers.filter(pl => pl.id !== p.id)); if (captainId === p.id) setCaptainId(null); }}>×</button>
                 </div>
-            ))}
-
+              ))}
+            </div>
+            <div className="photo-caption-footer">
+               <div className="caption-top"><span className="caption-user">{loggedInUser.toUpperCase()}</span><span className="caption-formation">{selectedFormation}</span></div>
+               <div className="caption-bottom"><span>DT: {selectedDT || "---"}</span><span>{timestamp}</span></div>
+            </div>
           </div>
 
           <div className={`teams-list-panel ${isPanelOpen ? 'panel-open' : ''}`}>
-            <button onClick={() => setIsPanelOpen(!isPanelOpen)}
-                    className="panel-toggle-btn">{isPanelOpen ? '▲' : '▼'}</button>
+            <button onClick={() => setIsPanelOpen(!isPanelOpen)} className="panel-toggle-btn">{isPanelOpen ? '▲' : '▼'}</button>
             <div className="teams-list-content">
-              <div className="panel-header-row">
-                <h3>Equipo: {loggedInUser}</h3>
-                <button className="logout-btn" onClick={handleLogout}>Salir</button>
-              </div>
-
-              <button className="save-btn" onClick={handleSaveTeam}>Guardar</button>
+              <div className="panel-header-row"><h3>Panel</h3><button className="logout-btn" onClick={handleLogout}>Salir</button></div>
+              <button className="save-btn" onClick={handleSaveTeam}>Guardar Imagen</button>
 
               <div className="select-group">
                 <label>Formación</label>
-                <select value={selectedFormation} onChange={e => setSelectedFormation(e.target.value)}>
-                  {availableFormations.map(f => <option key={f} value={f}>{f}</option>)}
+                <select value={selectedFormation} onChange={e => handleFormationChange(e.target.value)}>
+                  {availableFormations.map(f => (
+                    <option key={f} value={f} disabled={isFormationDisabled(f)}>
+                      {f} {isFormationDisabled(f) ? ' (Bloqueada)' : ''}
+                    </option>
+                  ))}
                 </select>
               </div>
-{}
-  <div className="select-group">
-    <label>DT de la Fecha (Equipo)</label>
-    <select value={selectedDT} onChange={e => {
-        const newDT = e.target.value;
-        const currentPlayersFromTeam = onFieldPlayers.filter(p => p.teamName === newDT).length;
-        if (currentPlayersFromTeam > 1) {
-          setModalMessage(`No podés elegir a ${newDT} como DT porque ya tenés 2 jugadores de ese club.`);
-        } else {
-          setSelectedDT(newDT);
-        }
-    }}>
-      <option value="">Seleccionar equipo...</option>
-      {playersData.map(t => <option key={t.teamName} value={t.teamName}>{t.teamName}</option>)}
-    </select>
-  </div>
+
               <div className="select-group">
-                <label>Equipo</label>
-                <select onChange={e => setSelectedTeam(playersData.find(t => t.teamName === e.target.value))}>
-                  {playersData.map(t => <option key={t.teamName} value={t.teamName}>{t.teamName}</option>)}
-                </select>
+                <label>DT (Equipo)</label>
+                <select value={selectedDT} onChange={e => {
+                    if (onFieldPlayers.filter(p => p.teamName === e.target.value).length > 1) return setModalMessage("Ya tienes 2 jugadores de este club.");
+                    setSelectedDT(e.target.value);
+                }}><option value="">Seleccionar...</option>{playersData.map(t => <option key={t.teamName} value={t.teamName}>{t.teamName}</option>)}</select>
+              </div>
+
+              <div className="select-group">
+                <label>Ver Jugadores</label>
+                <select onChange={e => setSelectedTeam(playersData.find(t => t.teamName === e.target.value))}>{playersData.map(t => <option key={t.teamName} value={t.teamName}>{t.teamName}</option>)}</select>
               </div>
 
               <div className="players-by-position">
                 {['Portero', 'Defensa', 'Mediocampista', 'Delantero'].map(pos => (
-                  <div key={pos} className="position-section">
-                    <h4>{pos}s</h4>
-                    <ul>
-                      {selectedTeam.players
-                        .filter(p => p.position === pos && !onFieldPlayers.some(fp => fp.id === p.id))
-                        .map(p => (
-                          <DraggablePlayer key={p.id} player={p} teamName={selectedTeam.teamName} />
-                        ))}
-                    </ul>
-                  </div>
+                  <div key={pos} className="position-section"><h4>{pos}s</h4><ul>{selectedTeam.players.filter(p => p.position === pos && !onFieldPlayers.some(fp => fp.id === p.id)).map(p => <DraggablePlayer key={p.id} player={p} teamName={selectedTeam.teamName} />)}</ul></div>
                 ))}
               </div>
             </div>
