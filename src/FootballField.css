@@ -19,16 +19,17 @@
 .field-container { width: 100vw; height: 100vh; background: #1a1a1a; overflow: hidden; }
 .field-and-panel-wrapper { display: flex; width: 100%; height: 100%; }
 
-/* Contenedor de Captura */
 .capture-wrapper {
-  flex-grow: 1;
   display: flex;
   flex-direction: column;
   background-color: #2e7d32;
-  height: fit-content;
-  max-height: 100vh;
+  /* Centramos la cancha en el espacio disponible */
+  justify-content: center;
+  align-items: center;
+  flex-grow: 1;
+  overflow-y: auto;
+  padding: 20px; /* Espacio para que no toque los bordes */
 }
-
 .field-boundary {
   position: relative;
   background-color: #2e7d32;
@@ -113,12 +114,70 @@
 .delete-player-btn { position: absolute; top: -8px; left: -8px; background: #dc3545; color: white; border: none; border-radius: 50%; width: 18px; height: 18px; font-size: 10px; cursor: pointer; display: flex; align-items: center; justify-content: center; opacity: 0; transition: opacity 0.2s; }
 .player-on-field:hover .delete-player-btn { opacity: 1; }
 
-/* MODAL */
-.modal-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.85); display: flex; justify-content: center; align-items: center; z-index: 10000; }
-.modal-content { background: white; padding: 2rem; border-radius: 15px; text-align: center; max-width: 300px; }
-.modal-actions { display: flex; gap: 10px; margin-top: 20px; }
-.modal-button { flex: 1; padding: 10px; border-radius: 5px; border: none; font-weight: bold; cursor: pointer; }
-.modal-button.confirm { background: #1e5128; color: white; }
+/* --- MODAL (CORREGIDO) --- */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.85); /* Fondo oscuro semitransparente */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 10000; /* Siempre por encima de todo */
+}
+
+.modal-content {
+  background-color: #ffffff !important; /* Fondo blanco sólido */
+  padding: 2rem;
+  border-radius: 15px;
+  text-align: center;
+  max-width: 320px;
+  width: 85%;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+  animation: modalPop 0.3s ease-out;
+  border: none;
+}
+
+.modal-content p {
+  color: #000000 !important; /* TEXTO NEGRO SÓLIDO */
+  font-size: 1.1rem;
+  font-weight: bold;
+  margin-bottom: 1.5rem;
+  opacity: 1 !important; /* Asegura que no sea transparente */
+}
+
+.modal-actions {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+}
+
+.modal-button {
+  padding: 10px 20px;
+  border-radius: 8px;
+  border: none;
+  font-weight: bold;
+  cursor: pointer;
+  min-width: 100px;
+  font-size: 14px;
+}
+
+.modal-button.confirm {
+  background-color: #1e5128;
+  color: #ffffff !important;
+}
+
+.modal-button.cancel {
+  background-color: #eeeeee;
+  color: #333333 !important;
+}
+
+@keyframes modalPop {
+  from { transform: scale(0.8); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
 
 /* MÓVILES */
 @media (max-width: 768px) {
