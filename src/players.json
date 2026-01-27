@@ -4,7 +4,6 @@
     "players": [
       { "id": 1, "name": "Kevin Parzajuk", "position": "Delantero" },
       { "id": 2, "name": "Allan Wlk", "position": "Delantero" },
-      { "id": 3, "name": "Hugo Sandoval", "position": "Delantero" },
       { "id": 4, "name": "Brahian Ferreira", "position": "Delantero" },
       { "id": 5, "name": "Nestor Bareiro", "position": "Delantero" },
       { "id": 6, "name": "Thiago Vidal", "position": "Delantero" },
@@ -25,7 +24,6 @@
       { "id": 21, "name": "Iván Piris", "position": "Defensa" },
       { "id": 22, "name": "Nicolás Marotta", "position": "Defensa" },
       { "id": 23, "name": "Lucas Monzon", "position": "Defensa" },
-      { "id": 24, "name": "Sebastian Vargas", "position": "Defensa" },
       { "id": 25, "name": "Facundo Echeguren", "position": "Defensa" },
       { "id": 26, "name": "Luis Cardozo", "position": "Defensa" },
       { "id": 27, "name": "Marcos Pereira", "position": "Defensa" },
@@ -40,6 +38,7 @@
   {
     "teamName": "CERRO PORTEÑO",
     "players": [
+      { "id": 427, "name": "Pablo Vegetti", "position": "Delantero" },
       { "id": 34, "name": "Sergio Araujo", "position": "Delantero" },
       { "id": 35, "name": "Juan Iturbe", "position": "Delantero" },
       { "id": 36, "name": "Héctor Bobadilla", "position": "Delantero" },
@@ -133,6 +132,7 @@
   {
     "teamName": "OLIMPIA",
     "players": [
+      { "id": 3, "name": "Hugo Sandoval", "position": "Delantero" },
       { "id": 117, "name": "Derlis González", "position": "Delantero" },
       { "id": 118, "name": "Sebastián Ferreira", "position": "Delantero" },
       { "id": 119, "name": "Tiago Caballero", "position": "Delantero" },
@@ -250,6 +250,7 @@
   {
     "teamName": "NACIONAL",
     "players": [
+      { "id": 24, "name": "Sebastian Vargas", "position": "Defensa" },
       { "id": 214, "name": "Roque Santa Cruz", "position": "Delantero" },
       { "id": 215, "name": "Cristian Colmán", "position": "Delantero" },
       { "id": 216, "name": "Lucas González", "position": "Delantero" },
