@@ -1,198 +1,274 @@
 /* --- LOGIN --- */
-.login-container {
-  display: flex; justify-content: center; align-items: center;
-  min-height: 100vh; width: 100vw;
-  background: linear-gradient(135deg, #1e5128 0%, #000000 100%);
-  font-family: sans-serif; position: fixed; top: 0; left: 0; z-index: 9999;
-}
-.login-card {
-  background: white; padding: 2.5rem; border-radius: 15px;
-  width: 100%; max-width: 320px; text-align: center;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-}
-.input-group { text-align: left; margin-bottom: 1.2rem; }
-.input-group label { display: block; margin-bottom: 0.4rem; font-weight: bold; color: #444; }
-.input-group input { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 8px; box-sizing: border-box; }
-.login-button { width: 100%; padding: 12px; background: #1e5128; color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; }
+.login-container { display: flex; justify-content: center; align-items: center; min-height: 100vh; width: 100vw; background: linear-gradient(135deg, #1e5128 0%, #000 100%); position: fixed; top: 0; left: 0; z-index: 9999; font-family: sans-serif; }
+.login-card { background: white; padding: 2.5rem; border-radius: 15px; width: 320px; text-align: center; }
+.input-group { text-align: left; margin-bottom: 1rem; }
+.input-group label { display: block; font-size: 12px; font-weight: bold; margin-bottom: 5px; }
+.input-group input { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box; }
+.login-button { width: 100%; padding: 12px; background: #1e5128; color: white; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; }
 
-/* --- CAMPO --- */
-.field-container { width: 100vw; height: 100vh; background: #1a1a1a; overflow: hidden; }
+/* --- ESTRUCTURA --- */
+.field-container { width: 100vw; height: 100vh; background: #1a1a1a; overflow: hidden; font-family: sans-serif; }
 .field-and-panel-wrapper { display: flex; width: 100%; height: 100%; }
 
-.capture-wrapper {
-  display: flex;
-  flex-direction: column;
-  background-color: #2e7d32;
-  /* Centramos la cancha en el espacio disponible */
-  justify-content: center;
-  align-items: center;
-  flex-grow: 1;
-  overflow-y: auto;
-  padding: 20px; /* Espacio para que no toque los bordes */
-}
-.field-boundary {
-  position: relative;
-  background-color: #2e7d32;
-  border: 4px solid white;
-  border-radius: 10px;
-
-  /* Definimos un tamaño base grande para PC */
-  width: 600px;
-  height: 800px;
-
-  /* Esto hace que en pantallas chicas no se rompa */
-  max-width: 95%;
-  max-height: 80vh;
-
-  overflow: hidden;
-  background-image: linear-gradient(rgba(255,255,255,0.05) 2px, transparent 2px);
-  background-size: 100% 10%;
-  box-shadow: 0 0 50px rgba(0,0,0,0.3);
-}
-
+/* Área de Captura (PC: ~50% de la pantalla) */
+.capture-wrapper { flex-grow: 1; display: flex; flex-direction: column; background-color: #2e7d32; align-items: center; justify-content: center; padding: 20px; }
+.field-boundary { position: relative; background-color: #2e7d32; border: 4px solid white; border-radius: 10px; width: 600px; height: 800px; max-width: 95%; max-height: 80vh; overflow: hidden; background-image: linear-gradient(rgba(255,255,255,0.05) 2px, transparent 2px); background-size: 100% 10%; box-shadow: 0 0 50px rgba(0,0,0,0.5); }
 .halfway-line { position: absolute; top: 50%; width: 100%; height: 2px; background: white; }
 .center-circle { position: absolute; top: 50%; left: 50%; width: 100px; height: 100px; border: 2px solid white; border-radius: 50%; transform: translate(-50%, -50%); }
 
-.player-placeholder {
-  position: absolute; width: 35px; height: 35px; border: 2px dashed rgba(255,255,255,0.5);
-  border-radius: 50%; transform: translate(-50%, -50%); color: white;
-  display: flex; justify-content: center; align-items: center; font-size: 9px; z-index: 5;
-}
+/* Pie de Foto Negro */
+.photo-caption-footer { background: #000; color: #fff; padding: 15px 20px; width: 600px; max-width: 95%; box-sizing: border-box; border-top: 2px solid #333; }
+.caption-top { display: flex; justify-content: space-between; margin-bottom: 5px; }
+.caption-user { color: #ffd700; font-size: 1.2rem; font-weight: 900; }
+.caption-bottom { display: flex; justify-content: space-between; font-size: 0.8rem; color: #888; }
 
-.player-on-field {
-  position: absolute; transform: translate(-50%, -50%); background: white;
-  padding: 4px 8px; border-radius: 4px; font-size: 11px; font-weight: bold;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.3); z-index: 10; cursor: pointer; color: #333;
-}
-.player-team { display: block; font-size: 8px; color: #666; font-weight: normal; }
-
-/* PIE DE FOTO NEGRO */
-/* Ajustamos el pie de foto para que coincida con el ancho de la cancha */
-.photo-caption-footer {
-  background-color: #000000;
-  color: #ffffff;
-  padding: 15px 20px;
-  border-top: 2px solid #333;
-  width: 600px; /* Mismo ancho que .field-boundary */
-  max-width: 95%;
-  box-sizing: border-box;
-}
-.caption-top { display: flex; justify-content: space-between; align-items: center; }
-.caption-user { color: #ffd700; font-size: 1.3rem; font-weight: 900; }
-.caption-formation { background: #222; padding: 2px 8px; border-radius: 4px; font-size: 0.8rem; }
-.caption-bottom { display: flex; justify-content: space-between; font-size: 0.8rem; color: #aaa; text-transform: uppercase; }
-
-/* --- PANEL LATERAL (SOLUCIÓN TRANSPARENCIA) --- */
+/* Panel Lateral y Pestañas */
+/* --- PANEL LATERAL (ESTRUCTURA BASE) --- */
 .teams-list-panel {
   width: 320px;
-  background-color: #1a1a1a !important; /* FONDO SÓLIDO */
-  color: white;
+  background: #1a1a1a !important;
+  color: #ffffff;
   display: flex;
   flex-direction: column;
   z-index: 1000;
   box-shadow: -5px 0 15px rgba(0,0,0,0.5);
-  transition: transform 0.3s ease;
 }
 
 .teams-list-content {
-  flex-grow: 1;
-  padding: 15px;
+  padding: 20px;
   overflow-y: auto;
-  background-color: #1a1a1a; /* REFUERZO DE OPACIDAD */
+  flex-grow: 1;
+  background: #1a1a1a;
 }
 
-.panel-header-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-.logout-btn { background: #dc3545; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 11px; }
-.save-btn { width: 100%; padding: 12px; background: #27ae60; color: white; border: none; border-radius: 6px; margin-bottom: 20px; cursor: pointer; font-weight: bold; }
+/* --- ESTILOS DE LA PESTAÑA "ARMAR" --- */
 
-.select-group { margin-bottom: 15px; }
-.select-group label { display: block; font-size: 11px; margin-bottom: 5px; color: #aaa; }
-.select-group select { width: 100%; padding: 10px; border-radius: 5px; background: #2c3e50; color: white; border: 1px solid #34495e; }
-
-/* JUGADORES LISTA */
-.draggable-player {
-  background: white; margin-bottom: 8px; padding: 12px; border-radius: 6px;
-  cursor: grab; list-style: none; font-size: 13px; color: #333; font-weight: bold;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1); touch-action: none;
-}
-
-/* CAPITAN */
-.player-on-field.is-captain { border: 2px solid #ffd700; }
-.captain-armband { position: absolute; top: -10px; right: -10px; background: #ffd700; color: black; width: 18px; height: 18px; border-radius: 50%; font-size: 10px; display: flex; justify-content: center; align-items: center; font-weight: bold; border: 1px solid black; }
-
-.delete-player-btn { position: absolute; top: -8px; left: -8px; background: #dc3545; color: white; border: none; border-radius: 50%; width: 18px; height: 18px; font-size: 10px; cursor: pointer; display: flex; align-items: center; justify-content: center; opacity: 0; transition: opacity 0.2s; }
-.player-on-field:hover .delete-player-btn { opacity: 1; }
-
-/* --- MODAL (CORREGIDO) --- */
-.modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  background: rgba(0, 0, 0, 0.85); /* Fondo oscuro semitransparente */
+.panel-header-row {
   display: flex;
-  justify-content: center;
+  justify-content: space-between;
   align-items: center;
-  z-index: 10000; /* Siempre por encima de todo */
+  margin-bottom: 20px;
+  border-bottom: 1px solid #333;
+  padding-bottom: 10px;
 }
 
-.modal-content {
-  background-color: #ffffff !important; /* Fondo blanco sólido */
-  padding: 2rem;
-  border-radius: 15px;
-  text-align: center;
-  max-width: 320px;
-  width: 85%;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-  animation: modalPop 0.3s ease-out;
+.panel-header-row h3 {
+  margin: 0;
+  font-size: 16px;
+  color: #ffd700; /* Dorado para el nombre del usuario */
+}
+
+.logout-btn {
+  background: #444;
+  color: #fff;
   border: none;
+  padding: 5px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 12px;
 }
 
-.modal-content p {
-  color: #000000 !important; /* TEXTO NEGRO SÓLIDO */
-  font-size: 1.1rem;
-  font-weight: bold;
-  margin-bottom: 1.5rem;
-  opacity: 1 !important; /* Asegura que no sea transparente */
-}
-
-.modal-actions {
+/* Selectores y Grupos */
+.select-group {
+  margin-bottom: 15px;
   display: flex;
-  gap: 10px;
-  justify-content: center;
+  flex-direction: column;
+  gap: 5px;
 }
 
-.modal-button {
-  padding: 10px 20px;
-  border-radius: 8px;
+.select-group label {
+  font-size: 11px;
+  font-weight: bold;
+  color: #888;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.select-group select {
+  width: 100%;
+  padding: 10px;
+  background: #2c2c2c;
+  color: #fff;
+  border: 1px solid #444;
+  border-radius: 6px;
+  font-size: 14px;
+  outline: none;
+  transition: border-color 0.3s;
+}
+
+.select-group select:focus {
+  border-color: #ffd700;
+}
+
+/* Lista de Jugadores para Arrastrar */
+.players-by-position {
+  margin-top: 20px;
+}
+
+.position-section h4 {
+  font-size: 12px;
+  color: #ffd700;
+  margin: 15px 0 8px 0;
+  border-left: 3px solid #ffd700;
+  padding-left: 8px;
+  text-transform: uppercase;
+}
+
+.position-section ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.draggable-player {
+  background: #ffffff;
+  color: #333;
+  padding: 10px 12px;
+  margin-bottom: 8px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: grab;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+  transition: transform 0.2s;
+}
+
+.draggable-player:active {
+  cursor: grabbing;
+}
+
+.draggable-player:hover {
+  background: #f0f0f0;
+  transform: translateX(5px);
+}
+
+/* --- BOTÓN GUARDAR / DESCARGAR --- */
+.save-btn {
+  width: 100%;
+  padding: 12px;
+  background: #27ae60;
+  color: white;
   border: none;
+  border-radius: 6px;
+  font-weight: bold;
+  font-size: 14px;
+  cursor: pointer;
+  margin-bottom: 20px;
+  transition: background 0.3s;
+}
+
+.save-btn:hover {
+  background: #219150;
+}
+/* Tabla Puntos */
+.scores-table { width: 100%; border-collapse: collapse; font-size: 14px; margin-top: 10px; }
+.scores-table th { text-align: left; color: #888; padding: 10px; border-bottom: 1px solid #333; }
+.scores-table td { padding: 12px 10px; border-bottom: 1px solid #222; }
+.score-points { font-weight: bold; color: #27ae60; text-align: right; }
+.highlight-row { background: rgba(255, 215, 0, 0.1); border-left: 3px solid #ffd700; }
+
+/* Otros */
+/* --- ESTILO DE LOS JUGADORES (30% MÁS PEQUEÑOS) --- */
+.player-on-field {
+  position: absolute;
+  transform: translate(-50%, -50%);
+
+  /* Reducido: de 80px a 56px de ancho mínimo */
+  background: #ffffff;
+  min-width: 60px;
+  padding: 4px 6px;
+  border-radius: 4px;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.3);
+  border: 1px solid #ddd;
+
+  z-index: 10;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  cursor: pointer;
+}
+
+/* Nombre del Jugador (Reducido de 11px a 9px) */
+.player-name {
+  color: #1a1a1a;
+  font-size: 7px;
+  font-weight: 800;
+  line-height: 1;
+  text-transform: uppercase;
+  margin-bottom: 1px;
+  /* Evita que nombres muy largos deformen la tarjeta */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 90px;
+}
+
+/* Equipo del Jugador (Reducido de 9px a 7.5px) */
+.player-team {
+  color: #777;
+  font-size: 7.5px;
+  font-weight: 600;
+  text-transform: none;
+}
+
+/* Capitán: Brazalete más pequeño */
+.captain-armband {
+  position: absolute;
+  top: -9px;
+  right: -9px;
+  background: #ffd700;
+  color: #000;
+  border: 1.5px solid #000;
+  border-radius: 50%;
+  width: 15px;
+  height: 15px;
+  font-size: 8px;
+  font-weight: 900;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 15;
+}
+
+/* Botón de Borrar (X) más pequeño */
+.delete-player-btn {
+  position: absolute;
+  top: -7px;
+  left: -7px;
+  background: #ff4d4d;
+  color: white;
+  border: 1.5px solid white;
+  border-radius: 50%;
+  width: 15px;
+  height: 15px;
+  font-size: 10px;
   font-weight: bold;
   cursor: pointer;
-  min-width: 100px;
-  font-size: 14px;
+  display: none;
+  align-items: center;
+  justify-content: center;
 }
 
-.modal-button.confirm {
-  background-color: #1e5128;
-  color: #ffffff !important;
+/* Los círculos punteados también un poco más chicos */
+.player-placeholder {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  width: 35px;
+  height: 35px;
+  border: 1.5px dashed rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
-
-.modal-button.cancel {
-  background-color: #eeeeee;
-  color: #333333 !important;
-}
-
-@keyframes modalPop {
-  from { transform: scale(0.8); opacity: 0; }
-  to { transform: scale(1); opacity: 1; }
-}
-
-/* MÓVILES */
-@media (max-width: 768px) {
-  .teams-list-panel { position: absolute; right: 0; height: 100%; width: 280px; transform: translateX(100%); }
-  .teams-list-panel.panel-open { transform: translateX(0); }
-  .panel-toggle-btn { position: absolute; left: -40px; top: 10px; width: 40px; height: 40px; background: #1a1a1a; color: white; border: none; border-radius: 5px 0 0 5px; cursor: pointer; }
-}
-
-.dragging-item-floating { background: #3498db; color: white; padding: 8px 15px; border-radius: 20px; font-size: 12px; font-weight: bold; z-index: 10000; border: 2px solid white; }
+@media (max-width: 768px) { .teams-list-panel { position: absolute; right: 0; transform: translateX(100%); height: 100%; } .teams-list-panel.panel-open { transform: translateX(0); } .panel-toggle-btn { position: absolute; left: -40px; top: 10px; background: #1a1a1a; color: #fff; width: 40px; height: 40px; border: none; border-radius: 5px 0 0 5px; } }
