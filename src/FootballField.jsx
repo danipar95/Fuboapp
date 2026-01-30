@@ -301,7 +301,10 @@ const FootballField = () => {
           </div>
 
           <div className={`teams-list-panel ${isPanelOpen ? 'panel-open' : ''}`}>
-            <button onClick={() => setIsPanelOpen(!isPanelOpen)} className="panel-toggle-btn">{isPanelOpen ? '▲' : '▼'}</button>
+            {/* Este es el botón que "tira" del panel hacia arriba en el celular */}
+  <button onClick={() => setIsPanelOpen(!isPanelOpen)} className="panel-toggle-btn">
+    {isPanelOpen ? '▼ CERRAR MENÚ' : '▲ ARMAR EQUIPO / POSICIONES'}
+  </button>
             <div className="tabs-header">
               <button className={`tab-btn ${activeTab === 'armar' ? 'active' : ''}`} onClick={() => setActiveTab('armar')}>⚙️ Armar</button>
               <button className={`tab-btn ${activeTab === 'puntos' ? 'active' : ''}`} onClick={() => setActiveTab('puntos')}>🏆 Puntos</button>
