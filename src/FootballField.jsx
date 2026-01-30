@@ -23,6 +23,21 @@ const hardcodedUsers = {
   "Invernalia": "Barrios", "Piris": "Alan", "Red Devils": "Marzio", "LORD": "RuizDiaz"
 };
 
+const scoresData = [
+  { rank: 1, team: "Blackbird", dt: "Sergio", points: 0 },
+  { rank: 2, team: "CMP", dt: "Danilo", points: 0 },
+  { rank: 3, team: "Danipar", dt: "Tulio", points: 0 },
+  { rank: 4, team: "La Fabrica", dt: "Maxi", points: 0 },
+  { rank: 5, team: "Invernalia", dt: "Barrios", points: 0 },
+  { rank: 6, team: "Piris", dt: "Alan", points: 0 },
+  { rank: 7, team: "Red Devils", dt: "Marzio", points: 0 },
+  { rank: 8, team: "LORD", dt: "RuizDiaz", points: 0 },
+  { rank: 9, team: "Milico", dt: "Rodrigo", points: 0 },
+  { rank: 10, team: "Tifosi", dt: "Pino", points: 0 },
+  { rank: 11, team: "Pynandi", dt: "Duarte", points: 0 },
+  { rank: 12, team: "Celtic", dt: "Fede", points: 0 },
+
+];
 const formationPositions = {
   "5-3-2": [{y:7,x:50,pos:'Portero'},{y:30,x:10,pos:'Defensa'},{y:25,x:30,pos:'Defensa'},{y:20,x:50,pos:'Defensa'},{y:25,x:70,pos:'Defensa'},{y:30,x:90,pos:'Defensa'},{y:55,x:25,pos:'Mediocampista'},{y:55,x:50,pos:'Mediocampista'},{y:55,x:75,pos:'Mediocampista'},{y:80,x:35,pos:'Delantero'},{y:80,x:65,pos:'Delantero'}],
   "5-4-1": [{y:7,x:50,pos:'Portero'},{y:30,x:10,pos:'Defensa'},{y:25,x:30,pos:'Defensa'},{y:20,x:50,pos:'Defensa'},{y:25,x:70,pos:'Defensa'},{y:30,x:90,pos:'Defensa'},{y:55,x:15,pos:'Mediocampista'},{y:45,x:30,pos:'Mediocampista'},{y:45,x:70,pos:'Mediocampista'},{y:55,x:85,pos:'Mediocampista'},{y:80,x:50,pos:'Delantero'}],
@@ -33,12 +48,6 @@ const formationPositions = {
   "3-4-3": [{y:7,x:50,pos:'Portero'},{y:25,x:20,pos:'Defensa'},{y:20,x:50,pos:'Defensa'},{y:25,x:75,pos:'Defensa'},{y:55,x:15,pos:'Mediocampista'},{y:45,x:30,pos:'Mediocampista'},{y:45,x:70,pos:'Mediocampista'},{y:55,x:85,pos:'Mediocampista'},{y:80,x:25,pos:'Delantero'},{y:85,x:50,pos:'Delantero'},{y:80,x:75,pos:'Delantero'}]
 };
 
-const scoresData = [
-  { rank: 1, team: "Blackbird", dt: "Sergio", points: 85 },
-  { rank: 2, team: "LORD", dt: "RuizDiaz", points: 78 },
-  { rank: 3, team: "Danipar", dt: "Tulio", points: 72 },
-  { rank: 4, team: "CMP", dt: "Danilo", points: 65 },
-];
 
 const DraggablePlayer = ({ player, teamName }) => {
   const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({
@@ -83,17 +92,11 @@ const FootballField = () => {
     useSensor(TouchSensor, { activationConstraint: { delay: 1000, tolerance: 10 } })
   );
 
-  // Alerta al recargar
-  useEffect(() => {
-    const handleBeforeUnload = (e) => {
-      if (onFieldPlayers.length > 0) {
-        e.preventDefault();
-        e.returnValue = '';
-      }
-    };
-    window.addEventListener('beforeunload', handleBeforeUnload);
-    return () => window.removeEventListener('beforeunload', handleBeforeUnload);
-  }, [onFieldPlayers]);
+ const playWhistle = () => {
+  const audio = new Audio('https://www.soundjay.com/sports/sounds/referee-whistle-01-short.mp3');
+  audio.volume = 0.2; // Un volumen sutil para que no sea molesto
+  audio.play().catch(e => console.log("Audio esperando interacción"));
+};
 
   useEffect(() => {
     if (loggedInUser) {
@@ -108,53 +111,44 @@ const FootballField = () => {
     }
   }, [loggedInUser]);
 
-  // Lógica de validación y movimiento automático de formación
-  const isFormationDisabled = (formationName) => {
+  const isFormationDisabled = (fName) => {
     if (onFieldPlayers.length === 0) return false;
-    const currentCounts = ['Portero', 'Defensa', 'Mediocampista', 'Delantero'].reduce((acc, pos) => {
-      acc[pos] = onFieldPlayers.filter(p => p.position === pos).length;
+    const currentCounts = onFieldPlayers.reduce((acc, p) => {
+      acc[p.position] = (acc[p.position] || 0) + 1;
       return acc;
     }, {});
-    const targetSlots = formationPositions[formationName];
-    const targetCounts = ['Portero', 'Defensa', 'Mediocampista', 'Delantero'].reduce((acc, pos) => {
-      acc[pos] = targetSlots.filter(s => s.pos === pos).length;
+    const targetSlots = formationPositions[fName].reduce((acc, slot) => {
+      acc[slot.pos] = (acc[slot.pos] || 0) + 1;
       return acc;
     }, {});
-    return Object.keys(currentCounts).some(pos => currentCounts[pos] > targetCounts[pos]);
+    return ['Portero', 'Defensa', 'Mediocampista', 'Delantero'].some(pos =>
+      (currentCounts[pos] || 0) > (targetSlots[pos] || 0)
+    );
   };
 
-  const handleFormationChange = (newForm) => {
-    if (isFormationDisabled(newForm)) return;
-    const slots = [...formationPositions[newForm]];
-    const newPlayers = onFieldPlayers.map(p => {
-      const slotIndex = slots.findIndex(s => s.pos === p.position);
-      const slot = slots[slotIndex];
-      slots.splice(slotIndex, 1);
+  const handleFormationChange = (newF) => {
+    if (isFormationDisabled(newF)) return;
+    const slots = [...formationPositions[newF]];
+    const updated = onFieldPlayers.map(p => {
+      const idx = slots.findIndex(s => s.pos === p.position);
+      const slot = slots[idx];
+      slots.splice(idx, 1);
       return { ...p, x: slot.x, y: slot.y };
     });
-    setOnFieldPlayers(newPlayers);
-    setSelectedFormation(newForm);
-  };
-
-  const handleLogin = (e) => {
-    e.preventDefault();
-    if (hardcodedUsers[username] === password) {
-      setLoggedInUser(username);
-      setPassword('');
-    } else {
-      setModalMessage('Usuario o contraseña incorrectos.');
-    }
+    setOnFieldPlayers(updated);
+    setSelectedFormation(newF);
   };
 
   const handleLogout = () => {
     setLoggedInUser(null);
     setOnFieldPlayers([]);
     setSelectedDT("");
+    setUsername("");
+    setPassword("");
   };
 
-  const handleDragStart = (event) => {
-    setActivePlayer(event.active.data.current);
-    if (navigator.vibrate) navigator.vibrate(100);
+  const handleDragStart = (e) => {
+    setActivePlayer(e.active.data.current);
     if (window.innerWidth < 768) setIsPanelOpen(false);
   };
 
@@ -163,39 +157,55 @@ const FootballField = () => {
     setActivePlayer(null);
     setIsPanelOpen(true);
     if (over && active) {
-      const playerData = active.data.current;
-      const targetPos = over.data.current;
-      if (onFieldPlayers.some(p => p.id === playerData.id)) return setModalMessage("Ya está en el campo");
-      const teamCount = onFieldPlayers.filter(p => p.teamName === playerData.teamName).length;
-      if (playerData.teamName === selectedDT) {
-        if (teamCount >= 1) return setModalMessage(`Solo 1 de ${playerData.teamName} (es el equipo del DT).`);
-      } else {
-        if (teamCount >= 2) return setModalMessage(`Máximo 2 de ${playerData.teamName}`);
-      }
-      if (playerData.position !== targetPos.position) return setModalMessage("Posición incorrecta");
-      setOnFieldPlayers([...onFieldPlayers, { ...playerData, x: targetPos.left, y: targetPos.top }]);
+  const pData = active.data.current;
+  const tPos = over.data.current;
+
+  // 1. Error: Jugador repetido
+  if (onFieldPlayers.some(p => p.id === pData.id)) {
+    playWhistle(); // ¡PRRRRRT!
+    return setModalMessage("Ya está en el campo");
+  }
+
+  // 2. Error: Validación de cupos por equipo
+  const teamCount = onFieldPlayers.filter(p => p.teamName === pData.teamName).length;
+  if (pData.teamName === selectedDT) {
+    if (teamCount >= 1) {
+      playWhistle(); // ¡PRRRRRT!
+      return setModalMessage(`Máximo 1 de ${pData.teamName} (DT).`);
     }
+  } else {
+    if (teamCount >= 2) {
+      playWhistle(); // ¡PRRRRRT!
+      return setModalMessage(`Máximo 2 de ${pData.teamName}.`);
+    }
+  }
+
+  // 3. Error: Posición incorrecta en la cancha
+  if (pData.position !== tPos.position) {
+    playWhistle(); // ¡PRRRRRT!
+    return setModalMessage("Posición incorrecta");
+  }
+
+  // Si pasa todas las reglas, se agrega sin silbato
+  setOnFieldPlayers(prev => [...prev, { ...pData, x: tPos.left, y: tPos.top }]);
+}
   };
 
   const handleSaveTeam = () => {
-    if (onFieldPlayers.length !== 11) return setModalMessage(`Faltan jugadores (${onFieldPlayers.length}/11).`);
-    if (!captainId) return setModalMessage("Doble clic en un jugador para el Capitán.");
-    if (!selectedDT) return setModalMessage("Elige un DT.");
-
-    const ahora = new Date();
-    const fecha = ahora.toLocaleDateString() + " - " + ahora.toLocaleTimeString();
+    if (onFieldPlayers.length !== 11) return setModalMessage("Faltan jugadores (11).");
+    if (!captainId) return setModalMessage("Doble clic para marcar al Capitán.");
+    if (!selectedDT) return setModalMessage("Falta elegir el DT de la fecha.");
+    const fecha = new Date().toLocaleString();
     setTimestamp(fecha);
-
     setConfirmModal({
-      message: '¿Descargar equipo?',
+      message: '¿Descargar imagen del equipo?',
       onConfirm: () => {
         localStorage.setItem(`team-${loggedInUser}`, JSON.stringify({
           players: onFieldPlayers, captainId, formation: selectedFormation, selectedDT, timestamp: fecha
         }));
         setTimeout(() => {
-          const input = document.getElementById('capture-area');
-          html2canvas(input, { useCORS: true, backgroundColor: "#000", scale: 2 }).then(canvas => {
-            canvas.toBlob(blob => saveAs(blob, `${loggedInUser}-equipo.png`));
+          html2canvas(document.getElementById('capture-area'), { useCORS: true, backgroundColor: "#000", scale: 2 }).then(canvas => {
+            saveAs(canvas.toDataURL(), `${loggedInUser}-equipo.png`);
           });
           setConfirmModal(null);
         }, 100);
@@ -205,19 +215,57 @@ const FootballField = () => {
   };
 
   if (!loggedInUser) {
-    return (
-      <div className="login-container">
-        <div className="login-card">
-          <h1>⚽ FUBOLITO</h1>
-          <form onSubmit={handleLogin} className="login-form">
-            <div className="input-group"><label>Usuario</label><input type="text" value={username} onChange={e=>setUsername(e.target.value)} required /></div>
-            <div className="input-group"><label>Pass</label><input type="password" value={password} onChange={e=>setPassword(e.target.value)} required /></div>
-            <button type="submit" className="login-button">Entrar</button>
-          </form>
+  return (
+    <div className="login-screen">
+      <div className="login-card">
+        <div className="login-header">
+          <span className="logo-icon">⚽</span>
+          <h1>FUBOLITO 2026</h1>
+          <p>Ingresa tus credenciales de DT</p>
+        </div>
+
+        <form className="login-form" onSubmit={(e) => {
+          e.preventDefault();
+          if (hardcodedUsers[username] === password) setLoggedInUser(username);
+          else {
+            playWhistle(); // ¡Silbatazo por login fallido!
+            setModalMessage("Usuario o contraseña incorrectos");
+          }
+        }}>
+          <div className="input-group">
+            <label>Usuario</label>
+            <input
+              type="text"
+              placeholder="Nombre de tu equipo..."
+              value={username}
+              onChange={e => setUsername(e.target.value)}
+              required
+            />
+          </div>
+
+          <div className="input-group">
+            <label>Contraseña</label>
+            <input
+              type="password"
+              placeholder="••••••••"
+              value={password}
+              onChange={e => setPassword(e.target.value)}
+              required
+            />
+          </div>
+
+          <button type="submit" className="login-button">
+            INICIAR SESIÓN
+          </button>
+        </form>
+
+        <div className="login-footer">
+          © danipar - 2026
         </div>
       </div>
-    );
-  }
+    </div>
+  );
+}
 
   return (
     <DndContext sensors={sensors} onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
@@ -227,18 +275,22 @@ const FootballField = () => {
 
         <div className="field-and-panel-wrapper">
           <div id="capture-area" className="capture-wrapper">
-            <div className="field-boundary" id="field-boundary">
+            <div className="field-boundary">
               <div className="halfway-line"></div><div className="center-circle"></div>
               {formationPositions[selectedFormation].map((pos, i) => {
-                const occupied = onFieldPlayers.some(p => p.x === pos.x && p.y === pos.y);
-                return !occupied && <PlayerPlaceholder key={i} id={`slot-${i}`} position={pos.pos} top={pos.y} left={pos.x}/>;
+                const occupied = onFieldPlayers.some(p => Math.abs(p.x - pos.x) < 1 && Math.abs(p.y - pos.y) < 1);
+                return !occupied && <PlayerPlaceholder key={`slot-${selectedFormation}-${i}`} id={`slot-${i}`} position={pos.pos} top={pos.y} left={pos.x}/>;
               })}
               {onFieldPlayers.map(p => (
                 <div key={p.id} className={`player-on-field ${captainId === p.id ? 'is-captain' : ''}`} style={{top: `${p.y}%`, left: `${p.x}%`}} onDoubleClick={() => setCaptainId(p.id === captainId ? null : p.id)}>
                   {captainId === p.id && <span className="captain-armband">©</span>}
                   <span className="player-name">{p.name}</span>
                   <span className="player-team">{p.teamName}</span>
-                  <button className="delete-player-btn" onClick={(e) => { e.stopPropagation(); setOnFieldPlayers(onFieldPlayers.filter(pl => pl.id !== p.id)); if (captainId === p.id) setCaptainId(null); }}>×</button>
+                  <button className="delete-player-btn" onClick={(e) => {
+                    e.stopPropagation();
+                    setOnFieldPlayers(onFieldPlayers.filter(pl => pl.id !== p.id));
+                    if (captainId === p.id) setCaptainId(null);
+                  }}>×</button>
                 </div>
               ))}
             </div>
@@ -254,49 +306,53 @@ const FootballField = () => {
               <button className={`tab-btn ${activeTab === 'armar' ? 'active' : ''}`} onClick={() => setActiveTab('armar')}>⚙️ Armar</button>
               <button className={`tab-btn ${activeTab === 'puntos' ? 'active' : ''}`} onClick={() => setActiveTab('puntos')}>🏆 Puntos</button>
             </div>
-
             <div className="teams-list-content">
               {activeTab === 'armar' ? (
                 <>
-                  <div className="panel-header-row"><h3>Panel</h3><button className="logout-btn" onClick={handleLogout}>Salir</button></div>
+                  <div className="panel-header-row"><h3>{loggedInUser}</h3><button className="logout-btn" onClick={handleLogout}>Salir</button></div>
                   <button className="save-btn" onClick={handleSaveTeam}>Descargar Imagen</button>
                   <div className="select-group">
                     <label>Formación</label>
                     <select value={selectedFormation} onChange={e => handleFormationChange(e.target.value)}>
                       {availableFormations.map(f => (
                         <option key={f} value={f} disabled={isFormationDisabled(f)}>
-                          {f} {isFormationDisabled(f) ? '(Bloqueada)' : ''}
+                          {f} {isFormationDisabled(f) ? '(Incompatible)' : ''}
                         </option>
                       ))}
                     </select>
                   </div>
                   <div className="select-group">
                     <label>DT de la Fecha</label>
-                    <select value={selectedDT} onChange={e => {
-                        if (onFieldPlayers.filter(p => p.teamName === e.target.value).length > 1) return setModalMessage("Ya tienes 2 jugadores de este club.");
-                        setSelectedDT(e.target.value);
-                    }}><option value="">Seleccionar equipo...</option>{playersData.map(t => <option key={t.teamName} value={t.teamName}>{t.teamName}</option>)}</select>
+                    <select value={selectedDT} onChange={e => setSelectedDT(e.target.value)}>
+                      <option value="">Elegir...</option>
+                      {playersData.map(t => <option key={t.teamName} value={t.teamName}>{t.teamName}</option>)}
+                    </select>
                   </div>
                   <div className="select-group">
-                    <label>Ver Equipo</label>
-                    <select onChange={e => setSelectedTeam(playersData.find(t => t.teamName === e.target.value))}>{playersData.map(t => <option key={t.teamName} value={t.teamName}>{t.teamName}</option>)}</select>
+                    <label>Club</label>
+                    <select onChange={e => setSelectedTeam(playersData.find(t => t.teamName === e.target.value))}>
+                      {playersData.map(t => <option key={t.teamName} value={t.teamName}>{t.teamName}</option>)}
+                    </select>
                   </div>
                   <div className="players-by-position">
                     {['Portero', 'Defensa', 'Mediocampista', 'Delantero'].map(pos => (
-                      <div key={pos} className="position-section"><h4>{pos}s</h4><ul>{selectedTeam.players.filter(p => p.position === pos && !onFieldPlayers.some(fp => fp.id === p.id)).map(p => <DraggablePlayer key={p.id} player={p} teamName={selectedTeam.teamName} />)}</ul></div>
+                      <div key={pos} className="position-section">
+                        <h4>{pos}s</h4>
+                        <ul>{selectedTeam.players.filter(p => p.position === pos && !onFieldPlayers.some(fp => fp.id === p.id)).map(p => <DraggablePlayer key={p.id} player={p} teamName={selectedTeam.teamName} />)}</ul>
+                      </div>
                     ))}
                   </div>
                 </>
               ) : (
                 <div className="scores-container">
-                  <h3>Tabla de Posiciones</h3>
+                  <h3>Tabla General</h3>
                   <table className="scores-table">
-                    <thead><tr><th>#</th><th>Equipo</th><th>Ptos</th></tr></thead>
+                    <thead><tr><th>#</th><th>Equipo</th><th>Pts</th></tr></thead>
                     <tbody>
                       {scoresData.map(s => (
                         <tr key={s.team} className={loggedInUser === s.team ? 'highlight-row' : ''}>
                           <td>{s.rank}</td>
-                          <td><div className="score-team-info"><strong>{s.team}</strong><span>{s.dt}</span></div></td>
+                          <td><strong>{s.team}</strong><br/><small>{s.dt}</small></td>
                           <td className="score-points">{s.points}</td>
                         </tr>
                       ))}
@@ -308,7 +364,14 @@ const FootballField = () => {
           </div>
         </div>
       </div>
-      <DragOverlay>{activePlayer ? <div className="dragging-item-floating">{activePlayer.name}</div> : null}</DragOverlay>
+     <DragOverlay>
+  {activePlayer ? (
+    <div className="player-on-field dragging-helper">
+      <span className="player-name">{activePlayer.name}</span>
+      <span className="player-team">{activePlayer.teamName}</span>
+    </div>
+  ) : null}
+</DragOverlay>
     </DndContext>
   );
 };

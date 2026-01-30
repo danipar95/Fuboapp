@@ -1,274 +1,250 @@
-/* --- LOGIN --- */
-.login-container { display: flex; justify-content: center; align-items: center; min-height: 100vh; width: 100vw; background: linear-gradient(135deg, #1e5128 0%, #000 100%); position: fixed; top: 0; left: 0; z-index: 9999; font-family: sans-serif; }
-.login-card { background: white; padding: 2.5rem; border-radius: 15px; width: 320px; text-align: center; }
-.input-group { text-align: left; margin-bottom: 1rem; }
-.input-group label { display: block; font-size: 12px; font-weight: bold; margin-bottom: 5px; }
-.input-group input { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box; }
-.login-button { width: 100%; padding: 12px; background: #1e5128; color: white; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; }
-
-/* --- ESTRUCTURA --- */
-.field-container { width: 100vw; height: 100vh; background: #1a1a1a; overflow: hidden; font-family: sans-serif; }
+/* --- GLOBAL --- */
+.field-container { width: 100vw; height: 100vh; background: #111; display: flex; overflow: hidden; font-family: 'Segoe UI', sans-serif; }
 .field-and-panel-wrapper { display: flex; width: 100%; height: 100%; }
 
-/* Área de Captura (PC: ~50% de la pantalla) */
-.capture-wrapper { flex-grow: 1; display: flex; flex-direction: column; background-color: #2e7d32; align-items: center; justify-content: center; padding: 20px; }
-.field-boundary { position: relative; background-color: #2e7d32; border: 4px solid white; border-radius: 10px; width: 600px; height: 800px; max-width: 95%; max-height: 80vh; overflow: hidden; background-image: linear-gradient(rgba(255,255,255,0.05) 2px, transparent 2px); background-size: 100% 10%; box-shadow: 0 0 50px rgba(0,0,0,0.5); }
-.halfway-line { position: absolute; top: 50%; width: 100%; height: 2px; background: white; }
-.center-circle { position: absolute; top: 50%; left: 50%; width: 100px; height: 100px; border: 2px solid white; border-radius: 50%; transform: translate(-50%, -50%); }
-
-/* Pie de Foto Negro */
-.photo-caption-footer { background: #000; color: #fff; padding: 15px 20px; width: 600px; max-width: 95%; box-sizing: border-box; border-top: 2px solid #333; }
-.caption-top { display: flex; justify-content: space-between; margin-bottom: 5px; }
-.caption-user { color: #ffd700; font-size: 1.2rem; font-weight: 900; }
-.caption-bottom { display: flex; justify-content: space-between; font-size: 0.8rem; color: #888; }
-
-/* Panel Lateral y Pestañas */
-/* --- PANEL LATERAL (ESTRUCTURA BASE) --- */
-.teams-list-panel {
-  width: 320px;
-  background: #1a1a1a !important;
-  color: #ffffff;
+/* --- LOGIN --- */
+/* Pantalla completa centrada */
+.login-screen {
+  width: 100vw;
+  height: 100vh;
+  background: radial-gradient(circle at center, #1a4a1a 0%, #0a0a0a 100%);
   display: flex;
-  flex-direction: column;
-  z-index: 1000;
-  box-shadow: -5px 0 15px rgba(0,0,0,0.5);
-}
-
-.teams-list-content {
-  padding: 20px;
-  overflow-y: auto;
-  flex-grow: 1;
-  background: #1a1a1a;
-}
-
-/* --- ESTILOS DE LA PESTAÑA "ARMAR" --- */
-
-.panel-header-row {
-  display: flex;
-  justify-content: space-between;
   align-items: center;
-  margin-bottom: 20px;
-  border-bottom: 1px solid #333;
-  padding-bottom: 10px;
+  justify-content: center;
 }
 
-.panel-header-row h3 {
-  margin: 0;
-  font-size: 16px;
-  color: #ffd700; /* Dorado para el nombre del usuario */
+/* Tarjeta de Login */
+.login-card {
+  background: #1e1e1e;
+  padding: 40px;
+  border-radius: 16px;
+  width: 360px;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8);
+  border: 1px solid #333;
+  text-align: center;
 }
 
-.logout-btn {
-  background: #444;
+.login-header h1 {
   color: #fff;
-  border: none;
-  padding: 5px 10px;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 12px;
+  font-size: 24px;
+  margin: 10px 0 5px 0;
+  letter-spacing: 2px;
 }
 
-/* Selectores y Grupos */
-.select-group {
-  margin-bottom: 15px;
-  display: flex;
-  flex-direction: column;
-  gap: 5px;
-}
-
-.select-group label {
-  font-size: 11px;
-  font-weight: bold;
+.login-header p {
   color: #888;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
-
-.select-group select {
-  width: 100%;
-  padding: 10px;
-  background: #2c2c2c;
-  color: #fff;
-  border: 1px solid #444;
-  border-radius: 6px;
-  font-size: 14px;
-  outline: none;
-  transition: border-color 0.3s;
-}
-
-.select-group select:focus {
-  border-color: #ffd700;
-}
-
-/* Lista de Jugadores para Arrastrar */
-.players-by-position {
-  margin-top: 20px;
-}
-
-.position-section h4 {
-  font-size: 12px;
-  color: #ffd700;
-  margin: 15px 0 8px 0;
-  border-left: 3px solid #ffd700;
-  padding-left: 8px;
-  text-transform: uppercase;
-}
-
-.position-section ul {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-}
-
-.draggable-player {
-  background: #ffffff;
-  color: #333;
-  padding: 10px 12px;
-  margin-bottom: 8px;
-  border-radius: 6px;
   font-size: 13px;
-  font-weight: 600;
-  cursor: grab;
+  margin-bottom: 30px;
+}
+
+.logo-icon {
+  font-size: 40px;
+  display: block;
+}
+
+/* Formulario */
+.login-form {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-  transition: transform 0.2s;
+  flex-direction: column;
+  gap: 20px;
 }
 
-.draggable-player:active {
-  cursor: grabbing;
+.input-group {
+  text-align: left;
 }
 
-.draggable-player:hover {
-  background: #f0f0f0;
-  transform: translateX(5px);
+.input-group label {
+  display: block;
+  color: #ffd700; /* Color dorado para los labels */
+  font-size: 11px;
+  text-transform: uppercase;
+  font-weight: bold;
+  margin-bottom: 8px;
+  margin-left: 2px;
 }
 
-/* --- BOTÓN GUARDAR / DESCARGAR --- */
-.save-btn {
+.input-group input {
   width: 100%;
-  padding: 12px;
+  padding: 12px 15px;
+  background: #2a2a2a;
+  border: 1px solid #444;
+  border-radius: 8px;
+  color: #fff;
+  font-size: 14px;
+  box-sizing: border-box; /* Vital para que no se salga del borde */
+  transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+.input-group input:focus {
+  outline: none;
+  border-color: #2e7d32;
+  box-shadow: 0 0 8px rgba(46, 125, 50, 0.4);
+}
+
+/* Botón */
+.login-button {
+  background: #2e7d32;
+  color: white;
+  border: none;
+  padding: 15px;
+  border-radius: 8px;
+  font-weight: 900;
+  cursor: pointer;
+  letter-spacing: 1px;
+  transition: background 0.3s, transform 0.2s;
+  margin-top: 10px;
+}
+
+.login-button:hover {
+  background: #388e3c;
+  transform: translateY(-2px);
+}
+
+.login-button:active {
+  transform: translateY(0);
+}
+
+.login-footer {
+  margin-top: 30px;
+  font-size: 10px;
+  color: #555;
+  text-transform: uppercase;
+}
+/* --- CANCHA --- */
+.capture-wrapper { flex-grow: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; background: #1a1a1a; padding: 10px; }
+.field-boundary { position: relative; background: #2e7d32; border: 4px solid #fff; border-radius: 8px; width: 600px; height: 800px; max-width: 95%; max-height: 85vh; box-shadow: 0 0 40px rgba(0,0,0,0.6); background-image: repeating-linear-gradient(0deg, transparent, transparent 78px, rgba(0,0,0,0.05) 80px); }
+.halfway-line { position: absolute; top: 50%; width: 100%; height: 2px; background: rgba(255,255,255,0.8); }
+.center-circle { position: absolute; top: 50%; left: 50%; width: 120px; height: 120px; border: 2px solid rgba(255,255,255,0.8); border-radius: 50%; transform: translate(-50%, -50%); }
+
+/* --- CIRCULOS (PLACEHOLDERS) --- */
+.player-placeholder { position: absolute; transform: translate(-50%, -50%); width: 42px; height: 42px; border: 2.5px dashed rgba(255, 255, 255, 0.9) !important; background: rgba(255, 255, 255, 0.1); border-radius: 50%; color: #fff; font-size: 10px; font-weight: 900; display: flex; align-items: center; justify-content: center; z-index: 5; pointer-events: auto; transition: 0.2s; }
+.player-placeholder.is-over { background: rgba(255,255,255,0.4); transform: translate(-50%, -50%) scale(1.2); }
+
+/* --- TARJETAS JUGADORES --- */
+.player-on-field { position: absolute; transform: translate(-50%, -50%); background: #fff; min-width: 65px; padding: 4px 6px; border-radius: 4px; display: flex; flex-direction: column; align-items: center; text-align: center; box-shadow: 0 4px 10px rgba(0,0,0,0.3); border: 1px solid #ddd; z-index: 100; cursor: grab; pointer-events: auto; }
+.player-name { color: #111; font-size: 9px; font-weight: 800; text-transform: uppercase; white-space: nowrap; max-width: 85px; overflow: hidden; text-overflow: ellipsis; }
+.player-team { color: #666; font-size: 7.5px; font-weight: 600; }
+.is-captain { border: 2.5px solid #ffd700 !important; box-shadow: 0 0 12px rgba(255,215,0,0.6); }
+.captain-armband { position: absolute; top: -8px; right: -8px; background: #ffd700; color: #000; width: 16px; height: 16px; border-radius: 50%; font-size: 10px; font-weight: 900; display: flex; align-items: center; justify-content: center; border: 1px solid #000; }
+.delete-player-btn { position: absolute; top: -10px; left: -10px; background: #ff4d4d; color: #fff; width: 18px; height: 18px; border-radius: 50%; border: 1.5px solid #fff; font-size: 12px; cursor: pointer; display: flex; align-items: center; justify-content: center; z-index: 110; pointer-events: auto !important; }
+
+/* --- PANEL LATERAL --- */
+.teams-list-panel { width: 320px; background: #1a1a1a; color: #fff; display: flex; flex-direction: column; box-shadow: -5px 0 20px #000; z-index: 1000; }
+.tabs-header { display: flex; background: #111; border-bottom: 2px solid #333; }
+.tab-btn { flex: 1; padding: 15px; background: transparent; color: #555; border: none; cursor: pointer; font-weight: bold; }
+.tab-btn.active { color: #ffd700; border-bottom: 3px solid #ffd700; }
+.teams-list-content { padding: 20px; overflow-y: auto; flex-grow: 1; }
+.panel-header-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid #333; padding-bottom: 10px; }
+.panel-header-row h3 { color: #ffd700; margin: 0; font-size: 16px; }
+.select-group { margin-bottom: 15px; }
+.select-group label { display: block; font-size: 10px; color: #888; text-transform: uppercase; margin-bottom: 5px; }
+.select-group select { width: 100%; padding: 10px; background: #2c2c2c; color: #fff; border: 1px solid #444; border-radius: 6px; }
+.select-group select option:disabled { color: #555; font-style: italic; }
+.draggable-player { background: #fff; color: #333; padding: 10px; margin-bottom: 8px; border-radius: 6px; font-weight: bold; cursor: grab; list-style: none; font-size: 13px; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
+.save-btn { width: 100%; padding: 12px; background: #27ae60; color: #fff; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; margin-bottom: 20px; }
+
+/* PUNTOS */
+.scores-table { width: 100%; border-collapse: collapse; }
+.scores-table td { padding: 12px 10px; border-bottom: 1px solid #222; font-size: 14px; }
+.score-points { text-align: right; color: #27ae60; font-weight: bold; }
+.highlight-row { background: rgba(255, 215, 0, 0.05); border-left: 3px solid #ffd700; }
+
+/* CAPTION FOOTER */
+.photo-caption-footer { width: 600px; max-width: 95%; background: #000; padding: 15px; box-sizing: border-box; }
+.caption-top { display: flex; justify-content: space-between; align-items: center; }
+.caption-user { color: #ffd700; font-size: 18px; font-weight: 900; }
+.caption-formation { color: #fff; font-weight: bold; border: 1px solid #444; padding: 2px 8px; border-radius: 4px; }
+
+/* DRAG OVERLAY */
+.dragging-item-floating { background: white; padding: 8px 15px; border-radius: 4px; border: 2px solid #ffd700; font-weight: bold; box-shadow: 0 5px 20px rgba(0,0,0,0.5); z-index: 9999; pointer-events: none; }
+/* Estilo para la tarjeta mientras se arrastra */
+.dragging-helper {
+  transform: scale(1.05); /* Un poquito más grande para que se note el movimiento */
+  box-shadow: 0 10px 25px rgba(0,0,0,0.4);
+  opacity: 0.9;
+  cursor: grabbing;
+  border: 2px solid #ffd700; /* Borde dorado para saber cuál llevas */
+}
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(4px); /* Desenfoca el fondo de la cancha */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000; /* Por encima de TODO */
+  animation: fadeIn 0.2s ease-out;
+}
+
+.modal-card {
+  background: #222;
+  border: 1px solid #444;
+  border-radius: 12px;
+  padding: 25px;
+  width: 300px;
+  text-align: center;
+  box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+  animation: slideUp 0.3s ease-out;
+}
+
+.modal-icon {
+  font-size: 30px;
+  margin-bottom: 10px;
+}
+
+.modal-message {
+  color: #fff;
+  font-size: 15px;
+  line-height: 1.5;
+  margin-bottom: 20px;
+  font-weight: 500;
+}
+
+.modal-actions {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+}
+
+.modal-btn {
+  padding: 10px 20px;
+  border-radius: 6px;
+  border: none;
+  font-weight: bold;
+  cursor: pointer;
+  transition: transform 0.2s, background 0.2s;
+}
+
+.modal-btn:active {
+  transform: scale(0.95);
+}
+
+.modal-btn.close, .modal-btn.confirm {
   background: #27ae60;
   color: white;
-  border: none;
-  border-radius: 6px;
-  font-weight: bold;
-  font-size: 14px;
-  cursor: pointer;
-  margin-bottom: 20px;
-  transition: background 0.3s;
+  flex: 1;
 }
 
-.save-btn:hover {
-  background: #219150;
-}
-/* Tabla Puntos */
-.scores-table { width: 100%; border-collapse: collapse; font-size: 14px; margin-top: 10px; }
-.scores-table th { text-align: left; color: #888; padding: 10px; border-bottom: 1px solid #333; }
-.scores-table td { padding: 12px 10px; border-bottom: 1px solid #222; }
-.score-points { font-weight: bold; color: #27ae60; text-align: right; }
-.highlight-row { background: rgba(255, 215, 0, 0.1); border-left: 3px solid #ffd700; }
-
-/* Otros */
-/* --- ESTILO DE LOS JUGADORES (30% MÁS PEQUEÑOS) --- */
-.player-on-field {
-  position: absolute;
-  transform: translate(-50%, -50%);
-
-  /* Reducido: de 80px a 56px de ancho mínimo */
-  background: #ffffff;
-  min-width: 60px;
-  padding: 4px 6px;
-  border-radius: 4px;
-
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-
-  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.3);
-  border: 1px solid #ddd;
-
-  z-index: 10;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  cursor: pointer;
+.modal-btn.cancel {
+  background: #444;
+  color: #ccc;
+  flex: 1;
 }
 
-/* Nombre del Jugador (Reducido de 11px a 9px) */
-.player-name {
-  color: #1a1a1a;
-  font-size: 7px;
-  font-weight: 800;
-  line-height: 1;
-  text-transform: uppercase;
-  margin-bottom: 1px;
-  /* Evita que nombres muy largos deformen la tarjeta */
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  max-width: 90px;
+.modal-btn.confirm:hover { background: #219150; }
+.modal-btn.cancel:hover { background: #555; color: #fff; }
+
+/* Animaciones */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
-/* Equipo del Jugador (Reducido de 9px a 7.5px) */
-.player-team {
-  color: #777;
-  font-size: 7.5px;
-  font-weight: 600;
-  text-transform: none;
+@keyframes slideUp {
+  from { transform: translateY(20px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
 }
-
-/* Capitán: Brazalete más pequeño */
-.captain-armband {
-  position: absolute;
-  top: -9px;
-  right: -9px;
-  background: #ffd700;
-  color: #000;
-  border: 1.5px solid #000;
-  border-radius: 50%;
-  width: 15px;
-  height: 15px;
-  font-size: 8px;
-  font-weight: 900;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 15;
-}
-
-/* Botón de Borrar (X) más pequeño */
-.delete-player-btn {
-  position: absolute;
-  top: -7px;
-  left: -7px;
-  background: #ff4d4d;
-  color: white;
-  border: 1.5px solid white;
-  border-radius: 50%;
-  width: 15px;
-  height: 15px;
-  font-size: 10px;
-  font-weight: bold;
-  cursor: pointer;
-  display: none;
-  align-items: center;
-  justify-content: center;
-}
-
-/* Los círculos punteados también un poco más chicos */
-.player-placeholder {
-  position: absolute;
-  transform: translate(-50%, -50%);
-  width: 35px;
-  height: 35px;
-  border: 1.5px dashed rgba(255, 255, 255, 0.3);
-  border-radius: 50%;
-  color: rgba(255, 255, 255, 0.5);
-  font-size: 8px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-@media (max-width: 768px) { .teams-list-panel { position: absolute; right: 0; transform: translateX(100%); height: 100%; } .teams-list-panel.panel-open { transform: translateX(0); } .panel-toggle-btn { position: absolute; left: -40px; top: 10px; background: #1a1a1a; color: #fff; width: 40px; height: 40px; border: none; border-radius: 5px 0 0 5px; } }
