@@ -302,3 +302,22 @@
     height: calc(90vw * 1.33); /* Mantiene la proporción */
   }
 }
+
+/* Esto evita que el dedo mueva la pantalla cuando tocas a un jugador */
+.draggable-player, .player-on-field {
+  touch-action: none; /* BLOQUEA el scroll nativo del celular al tocar aquí */
+  user-select: none;  /* Evita que se seleccione el texto */
+  -webkit-user-select: none;
+}
+
+/* También asegúrate de que el contenedor de la lista de jugadores
+   permita scroll normal si no estás tocando a un jugador */
+.teams-list-content {
+  overflow-y: auto;
+  touch-action: pan-y; /* Permite scroll vertical solo en el fondo del panel */
+}
+
+.dragging-helper {
+  z-index: 9999 !important;
+  position: fixed; /* Asegura que siga al dedo por toda la pantalla */
+}

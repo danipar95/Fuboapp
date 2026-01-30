@@ -87,11 +87,19 @@ const FootballField = () => {
   const [timestamp, setTimestamp] = useState("");
   const [activeTab, setActiveTab] = useState('armar');
 
-  const sensors = useSensors(
-    useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
-    useSensor(TouchSensor, { activationConstraint: { delay: 1000, tolerance: 10 } })
-  );
-
+const sensors = useSensors(
+  useSensor(PointerSensor, {
+    activationConstraint: {
+      distance: 8, // Sensibilidad en PC
+    },
+  }),
+  useSensor(TouchSensor, {
+    activationConstraint: {
+      delay: 250,      // MUY IMPORTANTE: Evita que el scroll bloquee el drag
+      tolerance: 5,    // Si mueve mucho el dedo antes del delay, se cancela
+    },
+  })
+);
  const playWhistle = () => {
   const audio = new Audio('https://www.soundjay.com/sports/sounds/referee-whistle-01-short.mp3');
   audio.volume = 0.2; // Un volumen sutil para que no sea molesto
@@ -220,7 +228,7 @@ const FootballField = () => {
       <div className="login-card">
         <div className="login-header">
           <span className="logo-icon">⚽</span>
-          <h1>FUBOLITO 2026</h1>
+          <h1>FUBOLITO APERTURA 2026</h1>
           <p>Ingresa tus credenciales de DT</p>
         </div>
 
