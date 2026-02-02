@@ -49,6 +49,15 @@ const formationPositions = {
   "3-4-3": [{y:7,x:50,pos:'Portero'},{y:25,x:20,pos:'Defensa'},{y:20,x:50,pos:'Defensa'},{y:25,x:75,pos:'Defensa'},{y:55,x:15,pos:'Mediocampista'},{y:45,x:30,pos:'Mediocampista'},{y:45,x:70,pos:'Mediocampista'},{y:55,x:85,pos:'Mediocampista'},{y:80,x:25,pos:'Delantero'},{y:85,x:50,pos:'Delantero'},{y:80,x:75,pos:'Delantero'}]
 };
 
+const fechaInicio = 2;
+const totalFechasTorneo = 21; // Las 21 fechas que mencionaste
+const fechaActual = 2; // La fecha que se acaba de jugar
+
+// Cálculo de progreso real:
+// Si estamos en la 2, es (2-2)/21 = 0%.
+// Si quieres que al jugar la primera ya marque avance: (2 - 2 + 1) / 21
+const progresoPuntual = ((fechaActual - fechaInicio + 1) / totalFechasTorneo) * 100;
+const porcentajeDisplay = Math.round(progresoPuntual);
 
 const getLeaguePoints = (pos) => {
   // Definimos la escala dentro o fuera de la función
@@ -542,12 +551,11 @@ const handleLogout = () => {
                     </div>
                     <div className="tournament-progress">
                       <div className="progress-info">
-                        <span>Fecha {currentDate} de 22</span>
-                        {/* Calculamos el porcentaje automáticamente */}
-                        <span>{Math.round((currentDate / 22) * 100)}% Completado</span>
+                        <span>Jornada {fechaActual - fechaInicio + 1} de {totalFechasTorneo}</span>
+                        <span>{porcentajeDisplay}% Completado</span>
                       </div>
                       <div className="progress-bar-bg">
-                        <div className="progress-bar-fill" style={{width: `${(currentDate / 22) * 100}%`}}></div>
+                        <div className="progress-bar-fill" style={{width: `${progresoPuntual}%`}}></div>
                       </div>
                     </div>
                     <table className="scores-table">
