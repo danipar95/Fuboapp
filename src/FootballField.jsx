@@ -49,22 +49,18 @@ const formationPositions = {
   "3-4-3": [{y:7,x:50,pos:'Portero'},{y:25,x:20,pos:'Defensa'},{y:20,x:50,pos:'Defensa'},{y:25,x:75,pos:'Defensa'},{y:55,x:15,pos:'Mediocampista'},{y:45,x:30,pos:'Mediocampista'},{y:45,x:70,pos:'Mediocampista'},{y:55,x:85,pos:'Mediocampista'},{y:80,x:25,pos:'Delantero'},{y:85,x:50,pos:'Delantero'},{y:80,x:75,pos:'Delantero'}]
 };
 
-const calculateLeaguePoints = (rank) => {
-  const pointsMap = {
-    1: 11, 2: 9, 3: 8, 4: 7, 5: 6,
-    6: 5, 7: 4, 8: 3, 9: 2, 10: 1,
-    11: 0
-  };
-  return pointsMap[rank] || 0;
-};
 
-const getLeaguePoints = (posicion) => {
-  const tablaPuntos = { 1: 12, 2: 10, 3: 9, 4: 8, 5: 7, 6: 6, 7: 5, 8: 4, 9: 3, 10: 2, 11: 1 };
-  return tablaPuntos[posicion] || 0;
+const getLeaguePoints = (pos) => {
+  // Definimos la escala dentro o fuera de la función
+  const escala = [11, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0];
+
+  // Si la posición existe en la escala, la devuelve; si no, devuelve 0
+  return escala[pos] !== undefined ? escala[pos] : 0;
 };
 
 // 1. Definimos cuánto vale cada puesto
-const puntosDeLiga = [12, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0, 0, 0];
+const puntosDeLiga = [11, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0];
+// Indice:            0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10
 
 // 2. Creamos la lista de puntos acumulados
 const currentScores = (() => {
@@ -515,27 +511,33 @@ const handleLogout = () => {
                     <div className="fecha-details">
                       <h4>Resultados Fecha {viewingFecha}</h4>
                       <table className="mini-table">
-                         <thead>
-                           <tr>
-                             <th>Pos</th>
-                             <th>Equipo</th>
-                             <th>Score</th>
-                             <th>Pts Liga</th>
-                           </tr>
-                         </thead>
-                         <tbody>
-                           {historialData.find(h => h.fecha === viewingFecha)?.resultados
-                             .sort((a,b) => b.scoreFecha - a.scoreFecha)
-                             .map((res, index) => (
-                               <tr key={res.team}>
-                                 <td>{index + 1}</td>
-                                 <td>{res.team}</td>
-                                 <td>{res.scoreFecha}</td>
-                                 <td className="gain">+{getLeaguePoints(index + 1)}</td>
-                               </tr>
-                             ))
-                           }
-                         </tbody>
+                        <thead>
+                        <tr>
+                          <th className="m-pos">Pos</th>
+                          <th className="m-team">Equipo</th>
+                          <th className="m-score">Score</th>
+                          <th className="m-ga">GA</th>
+                          {/* Nueva columna */}
+                          <th className="m-pts">Pts Liga</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {historialData.find(h => h.fecha === viewingFecha)?.resultados
+                            .sort((a, b) => {
+                              if (b.scoreFecha !== a.scoreFecha) return b.scoreFecha - a.scoreFecha;
+                              return b.ga - a.ga; // Desempate visual en la mini tabla
+                            })
+                            .map((res, index) => (
+                                <tr key={res.team}>
+                                  <td className="m-pos">{index + 1}</td>
+                                  <td className="m-team">{res.team}</td>
+                                  <td className="m-score">{res.scoreFecha}</td>
+                                  <td className="m-ga">{res.ga}</td>
+                                  <td className="m-pts gain">+{getLeaguePoints(index)}</td>
+                                </tr>
+                            ))
+                        }
+                        </tbody>
                       </table>
                     </div>
                     <div className="tournament-progress">
@@ -558,10 +560,10 @@ const handleLogout = () => {
                       </thead>
                       <tbody>
                       {/* ANTES: scoresData.map(...) */}
-                        {/* AHORA: */}
-                        {currentScores.map((s, index) => {
-                          const medal = index === 0 ? "🥇" : index === 1 ? "🥈" : index === 2 ? "🥉" : null;
-                          return (
+                      {/* AHORA: */}
+                      {currentScores.map((s, index) => {
+                        const medal = index === 0 ? "🥇" : index === 1 ? "🥈" : index === 2 ? "🥉" : null;
+                        return (
                             <tr key={s.team} className={loggedInUser === s.team ? 'highlight-row' : ''}>
                               <td>{medal || index + 1}</td>
                               <td>
@@ -572,8 +574,8 @@ const handleLogout = () => {
                               </td>
                               <td className="score-points-cell">{s.points}</td>
                             </tr>
-                          );
-                        })}
+                        );
+                      })}
                       </tbody>
                     </table>
                   </div>

@@ -529,3 +529,47 @@
   color: #4caf50;
   font-weight: bold;
 }
+
+/* Contenedor de la mini tabla */
+.fecha-details {
+  margin-top: 15px;
+  background: rgba(0, 0, 0, 0.2);
+  padding: 12px;
+  border-radius: 8px;
+  border: 1px solid #333;
+}
+
+.fecha-details h4 {
+  font-size: 13px;
+  color: #aaa;
+  margin-bottom: 10px;
+  text-transform: uppercase;
+}
+
+.mini-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 11px; /* Un poco más pequeña para que quepa todo */
+}
+
+/* Alineación de columnas específicas */
+.mini-table th, .mini-table td {
+  padding: 8px 4px;
+  border-bottom: 1px solid #222;
+}
+
+.m-pos { width: 30px; text-align: center; color: #666; }
+.m-team { text-align: left; font-weight: bold; color: #eee; }
+.m-score { width: 50px; text-align: center; color: #ffd700; } /* Dorado para el score de cancha */
+.m-ga { width: 40px; text-align: center; color: #888; }
+.m-pts { width: 50px; text-align: right; }
+
+.gain {
+  color: #4caf50;
+  font-weight: bold;
+}
+
+/* Efecto hover para leer mejor las filas */
+.mini-table tr:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
