@@ -62,6 +62,8 @@ const DraggablePlayer = ({ player, teamName }) => {
   );
 };
 
+
+
 const PlayerPlaceholder = ({ id, position, top, left }) => {
   const { setNodeRef, isOver } = useDroppable({ id, data: { position, top, left } });
   return (
@@ -70,6 +72,8 @@ const PlayerPlaceholder = ({ id, position, top, left }) => {
     </div>
   );
 };
+
+
 
 const FootballField = () => {
   const [loggedInUser, setLoggedInUser] = useState(null);
@@ -100,11 +104,32 @@ const sensors = useSensors(
     },
   })
 );
+useEffect(() => {
+  const handleBeforeUnload = (e) => {
+    // Solo mostramos la advertencia si hay jugadores en el campo
+    if (onFieldPlayers.length > 0) {
+      const message = "¿Seguro que quieres salir? Se perderán los cambios que no hayas guardado en la imagen.";
+      e.preventDefault();
+      e.returnValue = message; // Estándar para la mayoría de navegadores
+      return message;          // Estándar para algunos navegadores antiguos
+    }
+  };
+
+  window.addEventListener('beforeunload', handleBeforeUnload);
+
+  // Limpiamos el evento cuando el componente se desmonte
+  return () => {
+    window.removeEventListener('beforeunload', handleBeforeUnload);
+  };
+}, [onFieldPlayers]); // Se actualiza cada vez que cambia la lista de jugadores
  const playWhistle = () => {
   const audio = new Audio('https://www.soundjay.com/sports/sounds/referee-whistle-01-short.mp3');
   audio.volume = 0.2; // Un volumen sutil para que no sea molesto
   audio.play().catch(e => console.log("Audio esperando interacción"));
 };
+
+
+
 
   useEffect(() => {
     if (loggedInUser) {
@@ -147,13 +172,21 @@ const sensors = useSensors(
     setSelectedFormation(newF);
   };
 
-  const handleLogout = () => {
-    setLoggedInUser(null);
-    setOnFieldPlayers([]);
-    setSelectedDT("");
-    setUsername("");
-    setPassword("");
-  };
+const handleLogout = () => {
+  // 1. Preguntamos para evitar cierres accidentales
+  setConfirmModal({
+    message: '¿Estás seguro de que quieres cerrar sesión?',
+    onConfirm: () => {
+      setLoggedInUser(null);
+      setOnFieldPlayers([]);
+      setSelectedDT("");
+      setUsername("");
+      setPassword("");
+      setConfirmModal(null);
+    },
+    onCancel: () => setConfirmModal(null)
+  });
+};
 
   const handleDragStart = (e) => {
     setActivePlayer(e.active.data.current);
@@ -319,47 +352,62 @@ const sensors = useSensors(
             </div>
             <div className="teams-list-content">
               {activeTab === 'armar' ? (
-                <>
-                  <div className="panel-header-row"><h3>{loggedInUser}</h3><button className="logout-btn" onClick={handleLogout}>Salir</button></div>
-                  <button className="save-btn" onClick={handleSaveTeam}>Descargar Imagen</button>
-                  <div className="select-group">
-                    <label>Formación</label>
-                    <select value={selectedFormation} onChange={e => handleFormationChange(e.target.value)}>
-                      {availableFormations.map(f => (
-                        <option key={f} value={f} disabled={isFormationDisabled(f)}>
-                          {f} {isFormationDisabled(f) ? '(Incompatible)' : ''}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-                  <div className="select-group">
-                    <label>DT de la Fecha</label>
-                    <select value={selectedDT} onChange={e => setSelectedDT(e.target.value)}>
-                      <option value="">Elegir...</option>
-                      {playersData.map(t => <option key={t.teamName} value={t.teamName}>{t.teamName}</option>)}
-                    </select>
-                  </div>
-                  <div className="select-group">
-                    <label>Club</label>
-                    <select onChange={e => setSelectedTeam(playersData.find(t => t.teamName === e.target.value))}>
-                      {playersData.map(t => <option key={t.teamName} value={t.teamName}>{t.teamName}</option>)}
-                    </select>
-                  </div>
-                  <div className="players-by-position">
-                    {['Portero', 'Defensa', 'Mediocampista', 'Delantero'].map(pos => (
-                      <div key={pos} className="position-section">
-                        <h4>{pos}s</h4>
-                        <ul>{selectedTeam.players.filter(p => p.position === pos && !onFieldPlayers.some(fp => fp.id === p.id)).map(p => <DraggablePlayer key={p.id} player={p} teamName={selectedTeam.teamName} />)}</ul>
+                  <>
+                    <div className="panel-header-row">
+                      <div className="user-info">
+                        <small>DT CONECTADO</small>
+                        <h3>{loggedInUser}</h3>
                       </div>
-                    ))}
-                  </div>
-                </>
+                      <button className="logout-btn" onClick={handleLogout} title="Cerrar Sesión">
+                        <span className="logout-icon">⎋</span> SALIR
+                      </button>
+                    </div>
+                    <button className="save-btn" onClick={handleSaveTeam}>Descargar Imagen</button>
+                    <div className="select-group">
+                      <label>Formación</label>
+                      <select value={selectedFormation} onChange={e => handleFormationChange(e.target.value)}>
+                        {availableFormations.map(f => (
+                            <option key={f} value={f} disabled={isFormationDisabled(f)}>
+                              {f} {isFormationDisabled(f) ? '(Incompatible)' : ''}
+                            </option>
+                        ))}
+                      </select>
+                    </div>
+                    <div className="select-group">
+                      <label>DT de la Fecha</label>
+                      <select value={selectedDT} onChange={e => setSelectedDT(e.target.value)}>
+                        <option value="">Elegir...</option>
+                        {playersData.map(t => <option key={t.teamName} value={t.teamName}>{t.teamName}</option>)}
+                      </select>
+                    </div>
+                    <div className="select-group">
+                      <label>Club</label>
+                      <select onChange={e => setSelectedTeam(playersData.find(t => t.teamName === e.target.value))}>
+                        {playersData.map(t => <option key={t.teamName} value={t.teamName}>{t.teamName}</option>)}
+                      </select>
+                    </div>
+                    <div className="players-by-position">
+                      {['Portero', 'Defensa', 'Mediocampista', 'Delantero'].map(pos => (
+                          <div key={pos} className="position-section">
+                            <h4>{pos}s</h4>
+                            <ul>{selectedTeam.players.filter(p => p.position === pos && !onFieldPlayers.some(fp => fp.id === p.id)).map(p =>
+                                <DraggablePlayer key={p.id} player={p} teamName={selectedTeam.teamName}/>)}</ul>
+                          </div>
+                      ))}
+                    </div>
+                  </>
               ) : (
-                <div className="scores-container">
-                  <h3>Tabla General</h3>
-                  <table className="scores-table">
-                    <thead><tr><th>#</th><th>Equipo</th><th>Pts</th></tr></thead>
-                    <tbody>
+                  <div className="scores-container">
+                    <h3>Tabla General</h3>
+                    <table className="scores-table">
+                      <thead>
+                      <tr>
+                        <th>#</th>
+                        <th>Equipo</th>
+                        <th>Pts</th>
+                      </tr>
+                      </thead>
+                      <tbody>
                       {scoresData.map(s => (
                         <tr key={s.team} className={loggedInUser === s.team ? 'highlight-row' : ''}>
                           <td>{s.rank}</td>
