@@ -251,6 +251,7 @@
     "teamName": "NACIONAL",
     "players": [
 	  { "id": 428, "name": "Josue Colman", "position": "Mediocampista" },
+	  { "id": 240, "name": "Hugo A. Benitez", "position": "Delantero" },
       { "id": 24, "name": "Sebastian Vargas", "position": "Defensa" },
       { "id": 214, "name": "Roque Santa Cruz", "position": "Delantero" },
       { "id": 215, "name": "Cristian Colmán", "position": "Delantero" },
@@ -343,7 +344,7 @@
     "players": [
       { "id": 293, "name": "Caio Cruz", "position": "Defensa" },
       { "id": 294, "name": "Álex Álvarez", "position": "Delantero" },
-      { "id": 295, "name": "Antonio Oviedo", "position": Delantero" },
+      { "id": 295, "name": "Antonio Oviedo", "position": "Delantero" },
       { "id": 296, "name": "Victor Céspedes", "position": "Delantero" },
       { "id": 297, "name": "Miguel Ovejero", "position": "Delantero" },
       { "id": 298, "name": "Jeferson Torales", "position": "Delantero" },

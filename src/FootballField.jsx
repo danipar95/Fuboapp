@@ -131,18 +131,23 @@ useEffect(() => {
 
 
 
-  useEffect(() => {
-    if (loggedInUser) {
-      const savedData = localStorage.getItem(`team-${loggedInUser}`);
-      if (savedData) {
+ useEffect(() => {
+  if (loggedInUser) {
+    const savedData = localStorage.getItem(`team-${loggedInUser}`);
+    if (savedData) {
+      try {
         const parsed = JSON.parse(savedData);
         setOnFieldPlayers(parsed.players || []);
         setCaptainId(parsed.captainId || null);
         setSelectedDT(parsed.selectedDT || "");
         if (parsed.formation) setSelectedFormation(parsed.formation);
+      } catch (error) {
+        console.error("Error cargando datos locales:", error);
+        localStorage.removeItem(`team-${loggedInUser}`); // Limpia si está corrupto
       }
     }
-  }, [loggedInUser]);
+  }
+}, [loggedInUser]);
 
   const isFormationDisabled = (fName) => {
     if (onFieldPlayers.length === 0) return false;
