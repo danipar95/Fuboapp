@@ -265,14 +265,29 @@ const handleLogout = () => {
           <p>Ingresa tus credenciales de DT</p>
         </div>
 
-        <form className="login-form" onSubmit={(e) => {
-          e.preventDefault();
-          if (hardcodedUsers[username] === password) setLoggedInUser(username);
-          else {
-            playWhistle(); // ¡Silbatazo por login fallido!
-            setModalMessage("Usuario o contraseña incorrectos");
-          }
-        }}>
+        <form
+        onSubmit={(e) => {
+  e.preventDefault();
+
+  // Limpiamos cualquier mensaje previo antes de validar
+  setModalMessage(null);
+
+  // Convertimos a minúsculas/trim para evitar errores de espacios accidentales
+  const userInput = username.trim();
+  const passInput = password.trim();
+
+  if (hardcodedUsers[userInput] === passInput) {
+    // ÉXITO: Primero entramos, luego limpiamos los campos
+    setLoggedInUser(userInput);
+    console.log("Login exitoso para:", userInput);
+  } else {
+    // ERROR: Solo aquí suena el silbato y sale el mensaje
+    playWhistle();
+    setModalMessage("Usuario o contraseña incorrectos");
+    // Opcional: limpiar solo la contraseña para reintento
+    setPassword("");
+  }
+}}>
           <div className="input-group">
             <label>Usuario</label>
             <input
