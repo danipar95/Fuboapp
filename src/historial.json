@@ -1,0 +1,18 @@
+[
+  {
+    "fecha": 2,
+    "resultados": [
+      { "team": "Blackbird", "scoreFecha": 17, "ga": 2 },
+      { "team": "LORD", "scoreFecha": 13, "ga": 2 },
+      { "team": "Danipar", "scoreFecha": 14, "ga": 2 },
+	  { "team": "Invernalia", "scoreFecha": 22, "ga": 0 },
+      { "team": "Piris", "scoreFecha": 18, "ga": 1 },
+      { "team": "Milico", "scoreFecha": 0, "ga": 1 },
+	  { "team": "Pynandi", "scoreFecha": 28, "ga": 4 },
+	  { "team": "La Fabrica", "scoreFecha": 31, "ga": 2 },
+	  { "team": "Red Devils", "scoreFecha": 18, "ga": 2 },
+	  { "team": "Celtic", "scoreFecha": 30, "ga": 2 },
+	  { "team": "CMP", "scoreFecha": 20, "ga": 2 }
+    ]
+  }
+]

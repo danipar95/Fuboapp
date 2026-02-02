@@ -15,12 +15,14 @@ import playersData from './players.json';
 import Modal from './Modal';
 import html2canvas from 'html2canvas';
 import { saveAs } from 'file-saver';
+import historialDataRaw from './historial.json';
 
 const availableFormations = ["5-3-2", "5-4-1", "4-4-2", "4-3-3", "4-5-1", "3-5-2", "3-4-3"];
-
+const historialData = Array.isArray(historialDataRaw) ? historialDataRaw : [];
 const hardcodedUsers = {
-  "Blackbird": "Sergio", "CMP": "Danilo", "Danipar": "Tulio", "SilverCrows": "Roman",
-  "Invernalia": "Barrios", "Piris": "Alan", "Red Devils": "Marzio", "LORD": "RuizDiaz"
+  "Blackbird": "Sergio", "CMP": "Danilo", "Danipar": "Tulio", "La Fabrica": "Maxi",
+  "Invernalia": "Barrios", "Piris": "Alan", "Red Devils": "Marzio", "LORD": "RuizDiaz",
+  "Milico": "Rodrigo", "Pynandi": "Duarte", "Celtic": "Fede"
 };
 
 const scoresData = [
@@ -33,9 +35,8 @@ const scoresData = [
   { rank: 7, team: "Red Devils", dt: "Marzio", points: 0 },
   { rank: 8, team: "LORD", dt: "RuizDiaz", points: 0 },
   { rank: 9, team: "Milico", dt: "Rodrigo", points: 0 },
-  { rank: 10, team: "Tifosi", dt: "Pino", points: 0 },
-  { rank: 11, team: "Pynandi", dt: "Duarte", points: 0 },
-  { rank: 12, team: "Celtic", dt: "Fede", points: 0 },
+  { rank: 10, team: "Pynandi", dt: "Duarte", points: 0 },
+  { rank: 11, team: "Celtic", dt: "Fede", points: 0 },
 
 ];
 const formationPositions = {
@@ -47,6 +48,66 @@ const formationPositions = {
   "3-5-2": [{y:7,x:50,pos:'Portero'},{y:25,x:20,pos:'Defensa'},{y:20,x:50,pos:'Defensa'},{y:25,x:75,pos:'Defensa'},{y:60,x:10,pos:'Mediocampista'},{y:55,x:30,pos:'Mediocampista'},{y:45,x:50,pos:'Mediocampista'},{y:55,x:70,pos:'Mediocampista'},{y:60,x:90,pos:'Mediocampista'},{y:80,x:35,pos:'Delantero'},{y:80,x:65,pos:'Delantero'}],
   "3-4-3": [{y:7,x:50,pos:'Portero'},{y:25,x:20,pos:'Defensa'},{y:20,x:50,pos:'Defensa'},{y:25,x:75,pos:'Defensa'},{y:55,x:15,pos:'Mediocampista'},{y:45,x:30,pos:'Mediocampista'},{y:45,x:70,pos:'Mediocampista'},{y:55,x:85,pos:'Mediocampista'},{y:80,x:25,pos:'Delantero'},{y:85,x:50,pos:'Delantero'},{y:80,x:75,pos:'Delantero'}]
 };
+
+const calculateLeaguePoints = (rank) => {
+  const pointsMap = {
+    1: 11, 2: 9, 3: 8, 4: 7, 5: 6,
+    6: 5, 7: 4, 8: 3, 9: 2, 10: 1,
+    11: 0
+  };
+  return pointsMap[rank] || 0;
+};
+
+const getLeaguePoints = (posicion) => {
+  const tablaPuntos = { 1: 12, 2: 10, 3: 9, 4: 8, 5: 7, 6: 6, 7: 5, 8: 4, 9: 3, 10: 2, 11: 1 };
+  return tablaPuntos[posicion] || 0;
+};
+
+// 1. Definimos cuánto vale cada puesto
+const puntosDeLiga = [12, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0, 0, 0];
+
+// 2. Creamos la lista de puntos acumulados
+const currentScores = (() => {
+  let totales = {};
+
+  // Inicializamos equipos
+  Object.keys(hardcodedUsers).forEach(teamName => {
+    totales[teamName] = {
+      team: teamName,
+      points: 0,
+      ga: 0, // Añadimos GA al objeto total
+      dt: hardcodedUsers[teamName]
+    };
+  });
+
+  // Procesamos historial
+  historialData.forEach(f => {
+    // 1. Desempate dentro de la FECHA para asignar puntos de liga
+    const rankingFecha = [...f.resultados].sort((a, b) => {
+      if (b.scoreFecha !== a.scoreFecha) {
+        return b.scoreFecha - a.scoreFecha; // Primero por score
+      }
+      return b.ga - a.ga; // Si empatan, por GA
+    });
+
+    rankingFecha.forEach((resultado, pos) => {
+      if (totales[resultado.team]) {
+        totales[resultado.team].points += puntosDeLiga[pos] || 0;
+        // Actualizamos el GA total (usamos el GA de la última fecha cargada)
+        totales[resultado.team].ga = resultado.ga;
+      }
+    });
+  });
+
+  // 2. Desempate en la TABLA GENERAL
+  return Object.values(totales).sort((a, b) => {
+    if (b.points !== a.points) {
+      return b.points - a.points; // Primero por puntos de liga
+    }
+    return b.ga - a.ga; // Si empatan, por GA acumulado
+  });
+})();
+
 
 
 const DraggablePlayer = ({ player, teamName }) => {
@@ -91,6 +152,8 @@ const FootballField = () => {
   const [timestamp, setTimestamp] = useState("");
   const [activeTab, setActiveTab] = useState('armar');
 
+  const currentDate = 2;
+
 const sensors = useSensors(
   useSensor(PointerSensor, {
     activationConstraint: {
@@ -128,7 +191,27 @@ useEffect(() => {
   audio.play().catch(e => console.log("Audio esperando interacción"));
 };
 
+const [viewingFecha, setViewingFecha] = useState(currentDate);
 
+// Función para procesar los puntos totales acumulados
+const calculateTotalScores = () => {
+  let totals = {};
+
+  // Inicializar equipos
+  Object.keys(hardcodedUsers).forEach(team => totals[team] = 0);
+
+  // Procesar cada fecha del historial
+  historialData.forEach(f => {
+    // Ordenar resultados de esta fecha de mayor a menor score
+    const sortedFecha = [...f.resultados].sort((a, b) => b.scoreFecha - a.scoreFecha);
+
+    sortedFecha.forEach((res, index) => {
+      totals[res.team] += getLeaguePoints(index + 1);
+    });
+  });
+
+  return totals;
+};
 
 
  useEffect(() => {
@@ -418,39 +501,95 @@ const handleLogout = () => {
                   </>
               ) : (
                   <div className="scores-container">
-                    <h3>Tabla General</h3>
+                    <div className="scores-header">
+                      <div className="selector-fecha">
+                        <label>VER FECHA:</label>
+                        <select value={viewingFecha} onChange={(e) => setViewingFecha(parseInt(e.target.value))}>
+                          {[...Array(21)].map((_, i) => (
+                              <option key={i + 2} value={i + 2}>Fecha {i + 2}</option>
+                          ))}
+                        </select>
+                      </div>
+                    </div>
+                    {/* Tabla de la Fecha Seleccionada */}
+                    <div className="fecha-details">
+                      <h4>Resultados Fecha {viewingFecha}</h4>
+                      <table className="mini-table">
+                         <thead>
+                           <tr>
+                             <th>Pos</th>
+                             <th>Equipo</th>
+                             <th>Score</th>
+                             <th>Pts Liga</th>
+                           </tr>
+                         </thead>
+                         <tbody>
+                           {historialData.find(h => h.fecha === viewingFecha)?.resultados
+                             .sort((a,b) => b.scoreFecha - a.scoreFecha)
+                             .map((res, index) => (
+                               <tr key={res.team}>
+                                 <td>{index + 1}</td>
+                                 <td>{res.team}</td>
+                                 <td>{res.scoreFecha}</td>
+                                 <td className="gain">+{getLeaguePoints(index + 1)}</td>
+                               </tr>
+                             ))
+                           }
+                         </tbody>
+                      </table>
+                    </div>
+                    <div className="tournament-progress">
+                      <div className="progress-info">
+                        <span>Fecha {currentDate} de 22</span>
+                        {/* Calculamos el porcentaje automáticamente */}
+                        <span>{Math.round((currentDate / 22) * 100)}% Completado</span>
+                      </div>
+                      <div className="progress-bar-bg">
+                        <div className="progress-bar-fill" style={{width: `${(currentDate / 22) * 100}%`}}></div>
+                      </div>
+                    </div>
                     <table className="scores-table">
                       <thead>
                       <tr>
-                        <th>#</th>
-                        <th>Equipo</th>
-                        <th>Pts</th>
+                        <th className="col-rank">#</th>
+                        <th className="col-team">EQUIPO / DT</th>
+                        <th className="col-pts">PTS</th>
                       </tr>
                       </thead>
                       <tbody>
-                      {scoresData.map(s => (
-                        <tr key={s.team} className={loggedInUser === s.team ? 'highlight-row' : ''}>
-                          <td>{s.rank}</td>
-                          <td><strong>{s.team}</strong><br/><small>{s.dt}</small></td>
-                          <td className="score-points">{s.points}</td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
+                      {/* ANTES: scoresData.map(...) */}
+                        {/* AHORA: */}
+                        {currentScores.map((s, index) => {
+                          const medal = index === 0 ? "🥇" : index === 1 ? "🥈" : index === 2 ? "🥉" : null;
+                          return (
+                            <tr key={s.team} className={loggedInUser === s.team ? 'highlight-row' : ''}>
+                              <td>{medal || index + 1}</td>
+                              <td>
+                                <div className="team-info-cell">
+                                  <strong>{s.team}</strong>
+                                  <small>DT: {s.dt}</small>
+                                </div>
+                              </td>
+                              <td className="score-points-cell">{s.points}</td>
+                            </tr>
+                          );
+                        })}
+                      </tbody>
+                    </table>
+                  </div>
               )}
             </div>
           </div>
         </div>
       </div>
-     <DragOverlay>
-  {activePlayer ? (
-    <div className="player-on-field dragging-helper">
-      <span className="player-name">{activePlayer.name}</span>
-      <span className="player-team">{activePlayer.teamName}</span>
-    </div>
-  ) : null}
-</DragOverlay>
+      <DragOverlay>
+        {activePlayer ? (
+            <div className="player-on-field dragging-helper">
+              <span className="player-name">{activePlayer.name}</span>
+              <span className="player-team">{activePlayer.teamName}</span>
+            </div>
+        ) : null}
+      </DragOverlay>
     </DndContext>
   );
 };
