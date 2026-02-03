@@ -532,10 +532,10 @@ const handleLogout = () => {
                     <button className="save-btn" onClick={handleSaveTeam}>Descargar Imagen</button>
                     <div className="select-group">
                       <label>Formación</label>
-                      <select value={viewingFecha} onChange={(e) => setViewingFecha(parseInt(e.target.value))}>
-                        {historialData.map((f) => (
-                            <option key={f.fecha} value={f.fecha}>
-                              Fecha {f.fecha}
+                      <select value={selectedFormation} onChange={e => handleFormationChange(e.target.value)}>
+                        {availableFormations.map(f => (
+                            <option key={f} value={f} disabled={isFormationDisabled(f)}>
+                              {f} {isFormationDisabled(f) ? '(Incompatible)' : ''}
                             </option>
                         ))}
                       </select>
@@ -543,7 +543,7 @@ const handleLogout = () => {
                     <div className="select-group">
                       <label>DT de la Fecha</label>
                       <select value={selectedDT} onChange={e => setSelectedDT(e.target.value)}>
-                      <option value="">Elegir...</option>
+                        <option value="">Elegir...</option>
                         {playersData.map(t => <option key={t.teamName} value={t.teamName}>{t.teamName}</option>)}
                       </select>
                     </div>
@@ -566,11 +566,13 @@ const handleLogout = () => {
               ) : (
                   <div className="scores-container">
                     <div className="scores-header">
-                      <div className="selector-fecha">
-                        <label>VER FECHA:</label>
+                      <div className="select-group">
+                        <label>Formación</label>
                         <select value={viewingFecha} onChange={(e) => setViewingFecha(parseInt(e.target.value))}>
-                          {[...Array(21)].map((_, i) => (
-                              <option key={i + 2} value={i + 2}>Fecha {i + 2}</option>
+                          {historialData.map((f) => (
+                              <option key={f.fecha} value={f.fecha}>
+                                Fecha {f.fecha}
+                              </option>
                           ))}
                         </select>
                       </div>
