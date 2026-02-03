@@ -318,6 +318,33 @@ const handleLogout = () => {
     if (window.innerWidth < 768) setIsPanelOpen(false);
   };
 
+  const getTrend = (teamName) => {
+  if (historialData.length < 2) return "new"; // No hay suficiente historia para comparar
+
+  // 1. Obtener el ranking de la fecha anterior (penúltima en el JSON)
+  const penultimaFecha = historialData[historialData.length - 2];
+  const rankingAnterior = [...penultimaFecha.resultados].sort((a, b) => {
+    if (b.scoreFecha !== a.scoreFecha) return b.scoreFecha - a.scoreFecha;
+    return b.ga - a.ga;
+  });
+
+  // 2. Obtener el ranking de la fecha actual (última en el JSON)
+  const ultimaFecha = historialData[historialData.length - 1];
+  const rankingActual = [...ultimaFecha.resultados].sort((a, b) => {
+    if (b.scoreFecha !== a.scoreFecha) return b.scoreFecha - a.scoreFecha;
+    return b.ga - a.ga;
+  });
+
+  // 3. Encontrar los índices (posiciones)
+  const posAnt = rankingAnterior.findIndex(r => r.team === teamName);
+  const posAct = rankingActual.findIndex(r => r.team === teamName);
+
+  if (posAnt === -1) return "new";
+  if (posAct < posAnt) return "up";    // Subió (el índice es menor, ej: de 5 a 3)
+  if (posAct > posAnt) return "down";  // Bajó
+  return "equal";                      // Se mantuvo
+};
+
   const handleDragEnd = (event) => {
     const { over, active } = event;
     setActivePlayer(null);
@@ -593,25 +620,28 @@ const handleLogout = () => {
                     <table className="scores-table">
                       <thead>
                       <tr>
-                        <th className="col-rank">#</th>
-                        <th className="col-team">EQUIPO / DT</th>
-                        <th className="col-pts">PTS</th>
+                        <th>#</th>
+                        <th></th>
+                        {/* Espacio para la flecha */}
+                        <th>EQUIPO</th>
+                        <th>GA</th>
+                        <th>PTS</th>
                       </tr>
                       </thead>
                       <tbody>
-                      {/* ANTES: scoresData.map(...) */}
-                      {/* AHORA: */}
                       {currentScores.map((s, index) => {
-                        const medal = index === 0 ? "🥇" : index === 1 ? "🥈" : index === 2 ? "🥉" : null;
+                        const trend = getTrend(s.team);
+
                         return (
-                            <tr key={s.team} className={loggedInUser === s.team ? 'highlight-row' : ''}>
-                              <td>{medal || index + 1}</td>
-                              <td>
-                                <div className="team-info-cell">
-                                  <strong>{s.team}</strong>
-                                  <small>DT: {s.dt}</small>
-                                </div>
+                            <tr key={s.team}>
+                              <td>{index + 1}</td>
+                              <td className="trend-cell">
+                                {trend === "up" && <span className="trend-up">▲</span>}
+                                {trend === "down" && <span className="trend-down">▼</span>}
+                                {trend === "equal" && <span className="trend-equal">─</span>}
                               </td>
+                              <td>{s.team}</td>
+                              <td>{s.ga}</td>
                               <td className="score-points-cell">{s.points}</td>
                             </tr>
                         );
