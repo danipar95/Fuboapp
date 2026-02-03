@@ -16,6 +16,8 @@ import Modal from './Modal';
 import html2canvas from 'html2canvas';
 import { saveAs } from 'file-saver';
 import historialDataRaw from './historial.json';
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+
 
 const availableFormations = ["5-3-2", "5-4-1", "4-4-2", "4-3-3", "4-5-1", "3-5-2", "3-4-3"];
 const historialData = Array.isArray(historialDataRaw) ? historialDataRaw : [];
@@ -128,6 +130,25 @@ const DraggablePlayer = ({ player, teamName }) => {
   );
 };
 
+const getEvolutionData = () => {
+  // 1. Crear un mapa de todas las fechas registradas
+  return historialData.map(f => {
+    const dataPunto = { name: `F${f.fecha}` };
+
+    // Ordenar resultados de esta fecha para saber la posición de cada uno
+    const rankingFecha = [...f.resultados].sort((a, b) => {
+       if (b.scoreFecha !== a.scoreFecha) return b.scoreFecha - a.scoreFecha;
+       return b.ga - a.ga;
+    });
+
+    // Guardar la posición (1, 2, 3...) de cada equipo en esta fecha
+    rankingFecha.forEach((res, index) => {
+      dataPunto[res.team] = index + 1;
+    });
+
+    return dataPunto;
+  });
+};
 
 
 const PlayerPlaceholder = ({ id, position, top, left }) => {
@@ -157,7 +178,18 @@ const FootballField = () => {
   const [timestamp, setTimestamp] = useState("");
   const [activeTab, setActiveTab] = useState('armar');
 
-  const currentDate = 2;
+// Obtenemos la última fecha cargada en el historial
+// Si el historial está vacío, empezamos en la fecha 2
+const últimaFechaCargada = historialData.length > 0
+  ? Math.max(...historialData.map(h => h.fecha))
+  : 2;
+
+const fechaInicio = 2;
+const totalFechasTorneo = 21;
+
+// Cálculo de progreso (1 de 21, 2 de 21, etc.)
+const nroFechaActual = últimaFechaCargada - fechaInicio + 1;
+const progresoPuntual = (nroFechaActual / totalFechasTorneo) * 100;
 
 const sensors = useSensors(
   useSensor(PointerSensor, {
@@ -196,7 +228,7 @@ useEffect(() => {
   audio.play().catch(e => console.log("Audio esperando interacción"));
 };
 
-const [viewingFecha, setViewingFecha] = useState(currentDate);
+const [viewingFecha, setViewingFecha] = useState(nroFechaActual+1);
 
 // Función para procesar los puntos totales acumulados
 const calculateTotalScores = () => {
@@ -473,10 +505,10 @@ const handleLogout = () => {
                     <button className="save-btn" onClick={handleSaveTeam}>Descargar Imagen</button>
                     <div className="select-group">
                       <label>Formación</label>
-                      <select value={selectedFormation} onChange={e => handleFormationChange(e.target.value)}>
-                        {availableFormations.map(f => (
-                            <option key={f} value={f} disabled={isFormationDisabled(f)}>
-                              {f} {isFormationDisabled(f) ? '(Incompatible)' : ''}
+                      <select value={viewingFecha} onChange={(e) => setViewingFecha(parseInt(e.target.value))}>
+                        {historialData.map((f) => (
+                            <option key={f.fecha} value={f.fecha}>
+                              Fecha {f.fecha}
                             </option>
                         ))}
                       </select>
@@ -484,7 +516,7 @@ const handleLogout = () => {
                     <div className="select-group">
                       <label>DT de la Fecha</label>
                       <select value={selectedDT} onChange={e => setSelectedDT(e.target.value)}>
-                        <option value="">Elegir...</option>
+                      <option value="">Elegir...</option>
                         {playersData.map(t => <option key={t.teamName} value={t.teamName}>{t.teamName}</option>)}
                       </select>
                     </div>
@@ -551,8 +583,8 @@ const handleLogout = () => {
                     </div>
                     <div className="tournament-progress">
                       <div className="progress-info">
-                        <span>Jornada {fechaActual - fechaInicio + 1} de {totalFechasTorneo}</span>
-                        <span>{porcentajeDisplay}% Completado</span>
+                        <span>Jornada {nroFechaActual} de {totalFechasTorneo}</span>
+                        <span>{Math.round(progresoPuntual)}% Completado</span>
                       </div>
                       <div className="progress-bar-bg">
                         <div className="progress-bar-fill" style={{width: `${progresoPuntual}%`}}></div>
@@ -586,7 +618,43 @@ const handleLogout = () => {
                       })}
                       </tbody>
                     </table>
+                    <div className="evolution-chart-container" style={{marginTop: '30px', marginBottom: '30px'}}>
+                      <h4 style={{textAlign: 'center', color: '#888', marginBottom: '15px', fontSize: '12px'}}>
+                        EVOLUCIÓN DE POSICIONES
+                      </h4>
+                      <div style={{width: '100%', height: 300}}>
+                        <ResponsiveContainer>
+                          <LineChart data={getEvolutionData()}>
+                            <CartesianGrid strokeDasharray="3 3" stroke="#333" vertical={false}/>
+                            <XAxis dataKey="name" stroke="#888" fontSize={12} tickLine={false} axisLine={false}/>
+                            <YAxis reversed domain={[1, 11]} stroke="#888" fontSize={12} tickLine={false}
+                                   axisLine={false}/>
+                            <Tooltip
+                                contentStyle={{
+                                  backgroundColor: '#1a1a1a',
+                                  border: '1px solid #333',
+                                  borderRadius: '8px'
+                                }}
+                                itemStyle={{fontSize: '12px'}}
+                            />
+                            {Object.keys(hardcodedUsers).map((team, index) => (
+                                <Line
+                                    key={team}
+                                    type="monotone"
+                                    dataKey={team}
+                                    stroke={loggedInUser === team ? "#ffd700" : `hsl(${index * 35}, 60%, 45%)`}
+                                    strokeWidth={loggedInUser === team ? 4 : 1.5}
+                                    dot={loggedInUser === team ? {r: 4, fill: '#ffd700'} : false}
+                                    activeDot={{r: 6}}
+                                    connectNulls
+                                />
+                            ))}
+                          </LineChart>
+                        </ResponsiveContainer>
+                      </div>
+                    </div>
                   </div>
+
               )}
             </div>
           </div>
