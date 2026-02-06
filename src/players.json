@@ -250,6 +250,7 @@
   {
     "teamName": "NACIONAL",
     "players": [
+      { "id": 220, "name": "Alejandro Samudio", "position": "Delantero" },
 	  { "id": 428, "name": "Josue Colman", "position": "Mediocampista" },
 	  { "id": 240, "name": "Hugo A. Benitez", "position": "Delantero" },
       { "id": 24, "name": "Sebastian Vargas", "position": "Defensa" },
@@ -259,7 +260,6 @@
       { "id": 217, "name": "Ignacio Bailone", "position": "Delantero" },
       { "id": 218, "name": "Juan Santacruz", "position": "Delantero" },
       { "id": 219, "name": "Matías Almeida", "position": "Delantero" },
-      { "id": 220, "name": "Alejandro Samudio", "position": "Delantero" },
       { "id": 221, "name": "Alan Gomez", "position": "Delantero" },
       { "id": 222, "name": "Alfredo Martinez", "position": "Delantero" },
       { "id": 223, "name": "David Fleitas", "position": "Delantero" },
