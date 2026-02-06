@@ -5,7 +5,7 @@ const Modal = ({ message, onClose, onConfirm, showButtons = false }) => {
     useEffect(() => {
         if (!showButtons) {
             const timer = setTimeout(() => {
-                onClose();
+                onClose();3
             }, 3000);
             return () => clearTimeout(timer);
         }

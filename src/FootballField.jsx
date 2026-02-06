@@ -184,6 +184,7 @@ const últimaFechaCargada = historialData.length > 0
   ? Math.max(...historialData.map(h => h.fecha))
   : 2;
 
+
 const fechaInicio = 2;
 const totalFechasTorneo = 21;
 
@@ -345,6 +346,7 @@ const handleLogout = () => {
   return "equal";                      // Se mantuvo
 };
 
+
   const handleDragEnd = (event) => {
     const { over, active } = event;
     setActivePlayer(null);
@@ -406,6 +408,57 @@ const handleLogout = () => {
       onCancel: () => { setConfirmModal(null); setTimestamp(""); }
     });
   };
+
+  const getTrendGeneral = (teamName) => {
+  if (historialData.length < 2) return "new";
+
+  // 1. CALCULAR TABLA GENERAL HASTA LA FECHA ANTERIOR (Excluyendo la última)
+  const historialHastaPasada = historialData.slice(0, -1);
+  const tablaPasada = calcularTablaProvisional(historialHastaPasada);
+  // tablaPasada debe estar ordenada por puntos y GA
+
+  // 2. CALCULAR TABLA GENERAL ACTUAL (Incluyendo todo)
+  const tablaActual = currentScores; // Esta es la que ya tienes calculada y ordenada
+
+  // 3. COMPARAR POSICIONES
+  const posAnt = tablaPasada.findIndex(r => r.team === teamName);
+  const posAct = tablaActual.findIndex(r => r.team === teamName);
+
+  if (posAnt === -1) return "new";
+  if (posAct < posAnt) return "up";    // Subió en la general
+  if (posAct > posAnt) return "down";  // Bajó en la general
+  return "equal";                      // Se mantuvo
+};
+
+  const calcularTablaProvisional = (datosRecortados) => {
+  let totales = {};
+
+  // Inicializar equipos
+  Object.keys(hardcodedUsers).forEach(t => {
+    totales[t] = { team: t, points: 0, ga: 0 };
+  });
+
+  // Sumar solo hasta la fecha deseada
+  datosRecortados.forEach(f => {
+    const rankingFecha = [...f.resultados].sort((a, b) => {
+      if (b.scoreFecha !== a.scoreFecha) return b.scoreFecha - a.scoreFecha;
+      return b.ga - a.ga;
+    });
+
+    rankingFecha.forEach((res, pos) => {
+      if (totales[res.team]) {
+        totales[res.team].points += puntosDeLiga[pos] || 0;
+        totales[res.team].ga = res.ga; // Opcional: acumulativo o el último
+      }
+    });
+  });
+
+  // Devolver array ordenado para saber las posiciones
+  return Object.values(totales).sort((a, b) => {
+    if (b.points !== a.points) return b.points - a.points;
+    return b.ga - a.ga;
+  });
+};
 
   if (!loggedInUser) {
   return (
@@ -702,6 +755,36 @@ const handleLogout = () => {
       </DragOverlay>
     </DndContext>
   );
+};
+
+const calcularRankingAcumulado = (datosHistorial, usuarios, puntosEscala) => {
+  let totales = {};
+
+  // Inicializamos a cero
+  Object.keys(usuarios).forEach(t => {
+    totales[t] = { team: t, points: 0, ga: 0 };
+  });
+
+  // Procesamos fecha por fecha
+  datosHistorial.forEach(f => {
+    const rankingFecha = [...f.resultados].sort((a, b) => {
+      if (b.scoreFecha !== a.scoreFecha) return b.scoreFecha - a.scoreFecha;
+      return b.ga - a.ga;
+    });
+
+    rankingFecha.forEach((res, pos) => {
+      if (totales[res.team]) {
+        totales[res.team].points += puntosEscala[pos] || 0;
+        totales[res.team].ga = res.ga; // Tomamos el último GA reportado
+      }
+    });
+  });
+
+  // Retornamos la lista ordenada (el Ranking)
+  return Object.values(totales).sort((a, b) => {
+    if (b.points !== a.points) return b.points - a.points;
+    return b.ga - a.ga;
+  });
 };
 
 export default FootballField;
