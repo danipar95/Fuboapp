@@ -16,8 +16,7 @@ import Modal from './Modal';
 import html2canvas from 'html2canvas';
 import { saveAs } from 'file-saver';
 import historialDataRaw from './historial.json';
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
-
+import { LineChart, Line, AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 
 const availableFormations = ["5-3-2", "5-4-1", "4-4-2", "4-3-3", "4-5-1", "3-5-2", "3-4-3"];
 const historialData = Array.isArray(historialDataRaw) ? historialDataRaw : [];
@@ -25,6 +24,39 @@ const hardcodedUsers = {
   "Blackbird": "Sergio", "CMP": "Danilo", "Danipar": "Tulio", "La Fabrica": "Maxi",
   "Invernalia": "Barrios", "Piris": "Alan", "Red Devils": "Marzio", "LORD": "RuizDiaz",
   "Milico": "Rodrigo", "Pynandi": "Duarte", "Celtic": "Fede"
+};
+
+
+const calcularRankingAcumulado = (datosHistorial, usuarios, puntosEscala) => {
+  let totales = {};
+
+  // Inicializamos a cero
+  Object.keys(usuarios).forEach(t => {
+    totales[t] = { team: t, points: 0, ga: 0 };
+  });
+
+
+
+  // Procesamos fecha por fecha
+  datosHistorial.forEach(f => {
+    const rankingFecha = [...f.resultados].sort((a, b) => {
+      if (b.scoreFecha !== a.scoreFecha) return b.scoreFecha - a.scoreFecha;
+      return b.ga - a.ga;
+    });
+
+    rankingFecha.forEach((res, pos) => {
+      if (totales[res.team]) {
+        totales[res.team].points += puntosEscala[pos] || 0;
+        totales[res.team].ga += res.ga; // Ahora suma los goles de cada fecha
+      }
+    });
+  });
+
+  // Retornamos la lista ordenada (el Ranking)
+  return Object.values(totales).sort((a, b) => {
+    if (b.points !== a.points) return b.points - a.points;
+    return b.ga - a.ga;
+  });
 };
 
 const scoresData = [
@@ -74,46 +106,6 @@ const puntosDeLiga = [11, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0];
 // Indice:            0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10
 
 // 2. Creamos la lista de puntos acumulados
-const currentScores = (() => {
-  let totales = {};
-
-  // Inicializamos equipos
-  Object.keys(hardcodedUsers).forEach(teamName => {
-    totales[teamName] = {
-      team: teamName,
-      points: 0,
-      ga: 0, // Añadimos GA al objeto total
-      dt: hardcodedUsers[teamName]
-    };
-  });
-
-  // Procesamos historial
-  historialData.forEach(f => {
-    // 1. Desempate dentro de la FECHA para asignar puntos de liga
-    const rankingFecha = [...f.resultados].sort((a, b) => {
-      if (b.scoreFecha !== a.scoreFecha) {
-        return b.scoreFecha - a.scoreFecha; // Primero por score
-      }
-      return b.ga - a.ga; // Si empatan, por GA
-    });
-
-    rankingFecha.forEach((resultado, pos) => {
-      if (totales[resultado.team]) {
-        totales[resultado.team].points += puntosDeLiga[pos] || 0;
-        // Actualizamos el GA total (usamos el GA de la última fecha cargada)
-        totales[resultado.team].ga = resultado.ga;
-      }
-    });
-  });
-
-  // 2. Desempate en la TABLA GENERAL
-  return Object.values(totales).sort((a, b) => {
-    if (b.points !== a.points) {
-      return b.points - a.points; // Primero por puntos de liga
-    }
-    return b.ga - a.ga; // Si empatan, por GA acumulado
-  });
-})();
 
 
 
@@ -180,6 +172,40 @@ const FootballField = () => {
 
 // Obtenemos la última fecha cargada en el historial
 // Si el historial está vacío, empezamos en la fecha 2
+
+  // Cálculo del Ranking ACTUAL (Hoy)
+
+  const getGeneralHistoryData = () => {
+  const generalHistory = [];
+  const equipos = Object.keys(hardcodedUsers);
+
+  // Recorremos cada fecha disponible en el historial
+  for (let i = 1; i <= historialData.length; i++) {
+    const subHistorial = historialData.slice(0, i);
+    const fechaActualRef = historialData[i - 1].fecha;
+
+    // Calculamos la tabla general hasta esa fecha usando tu función maestra
+    const tablaEnEseMomento = calcularRankingAcumulado(subHistorial, hardcodedUsers, puntosDeLiga);
+
+    const puntoGrafico = { name: `F${fechaActualRef}` };
+
+    // Guardamos el puesto (índice + 1) de cada equipo
+    tablaEnEseMomento.forEach((res, index) => {
+      puntoGrafico[res.team] = index + 1;
+    });
+
+    generalHistory.push(puntoGrafico);
+  }
+  return generalHistory;
+};
+
+  const currentScores = calcularRankingAcumulado(historialData, hardcodedUsers, puntosDeLiga);
+
+  // Cálculo del Ranking PASADO (Ayer) para poder comparar y sacar las flechitas
+  const pastScores = historialData.length > 1
+    ? calcularRankingAcumulado(historialData.slice(0, -1), hardcodedUsers, puntosDeLiga)
+    : [];
+
 const últimaFechaCargada = historialData.length > 0
   ? Math.max(...historialData.map(h => h.fecha))
   : 2;
@@ -232,25 +258,6 @@ useEffect(() => {
 const [viewingFecha, setViewingFecha] = useState(nroFechaActual+1);
 
 // Función para procesar los puntos totales acumulados
-const calculateTotalScores = () => {
-  let totals = {};
-
-  // Inicializar equipos
-  Object.keys(hardcodedUsers).forEach(team => totals[team] = 0);
-
-  // Procesar cada fecha del historial
-  historialData.forEach(f => {
-    // Ordenar resultados de esta fecha de mayor a menor score
-    const sortedFecha = [...f.resultados].sort((a, b) => b.scoreFecha - a.scoreFecha);
-
-    sortedFecha.forEach((res, index) => {
-      totals[res.team] += getLeaguePoints(index + 1);
-    });
-  });
-
-  return totals;
-};
-
 
  useEffect(() => {
   if (loggedInUser) {
@@ -319,32 +326,6 @@ const handleLogout = () => {
     if (window.innerWidth < 768) setIsPanelOpen(false);
   };
 
-  const getTrend = (teamName) => {
-  if (historialData.length < 2) return "new"; // No hay suficiente historia para comparar
-
-  // 1. Obtener el ranking de la fecha anterior (penúltima en el JSON)
-  const penultimaFecha = historialData[historialData.length - 2];
-  const rankingAnterior = [...penultimaFecha.resultados].sort((a, b) => {
-    if (b.scoreFecha !== a.scoreFecha) return b.scoreFecha - a.scoreFecha;
-    return b.ga - a.ga;
-  });
-
-  // 2. Obtener el ranking de la fecha actual (última en el JSON)
-  const ultimaFecha = historialData[historialData.length - 1];
-  const rankingActual = [...ultimaFecha.resultados].sort((a, b) => {
-    if (b.scoreFecha !== a.scoreFecha) return b.scoreFecha - a.scoreFecha;
-    return b.ga - a.ga;
-  });
-
-  // 3. Encontrar los índices (posiciones)
-  const posAnt = rankingAnterior.findIndex(r => r.team === teamName);
-  const posAct = rankingActual.findIndex(r => r.team === teamName);
-
-  if (posAnt === -1) return "new";
-  if (posAct < posAnt) return "up";    // Subió (el índice es menor, ej: de 5 a 3)
-  if (posAct > posAnt) return "down";  // Bajó
-  return "equal";                      // Se mantuvo
-};
 
 
   const handleDragEnd = (event) => {
@@ -409,56 +390,20 @@ const handleLogout = () => {
     });
   };
 
-  const getTrendGeneral = (teamName) => {
-  if (historialData.length < 2) return "new";
+ const getTrendGeneral = (teamName) => {
+  // Si no hay historial suficiente o pastScores está vacío, es nuevo
+  if (pastScores.length === 0) return "new";
 
-  // 1. CALCULAR TABLA GENERAL HASTA LA FECHA ANTERIOR (Excluyendo la última)
-  const historialHastaPasada = historialData.slice(0, -1);
-  const tablaPasada = calcularTablaProvisional(historialHastaPasada);
-  // tablaPasada debe estar ordenada por puntos y GA
-
-  // 2. CALCULAR TABLA GENERAL ACTUAL (Incluyendo todo)
-  const tablaActual = currentScores; // Esta es la que ya tienes calculada y ordenada
-
-  // 3. COMPARAR POSICIONES
-  const posAnt = tablaPasada.findIndex(r => r.team === teamName);
-  const posAct = tablaActual.findIndex(r => r.team === teamName);
+  // Buscamos la posición (índice) en la tabla PASADA y la ACTUAL
+  const posAnt = pastScores.findIndex(r => r.team === teamName);
+  const posAct = currentScores.findIndex(r => r.team === teamName);
 
   if (posAnt === -1) return "new";
-  if (posAct < posAnt) return "up";    // Subió en la general
-  if (posAct > posAnt) return "down";  // Bajó en la general
-  return "equal";                      // Se mantuvo
+  if (posAct < posAnt) return "up";    // Subió (ej: de posición 5 a 3)
+  if (posAct > posAnt) return "down";  // Bajó (ej: de 2 a 4)
+  return "equal";                      // Se mantuvo igual
 };
 
-  const calcularTablaProvisional = (datosRecortados) => {
-  let totales = {};
-
-  // Inicializar equipos
-  Object.keys(hardcodedUsers).forEach(t => {
-    totales[t] = { team: t, points: 0, ga: 0 };
-  });
-
-  // Sumar solo hasta la fecha deseada
-  datosRecortados.forEach(f => {
-    const rankingFecha = [...f.resultados].sort((a, b) => {
-      if (b.scoreFecha !== a.scoreFecha) return b.scoreFecha - a.scoreFecha;
-      return b.ga - a.ga;
-    });
-
-    rankingFecha.forEach((res, pos) => {
-      if (totales[res.team]) {
-        totales[res.team].points += puntosDeLiga[pos] || 0;
-        totales[res.team].ga = res.ga; // Opcional: acumulativo o el último
-      }
-    });
-  });
-
-  // Devolver array ordenado para saber las posiciones
-  return Object.values(totales).sort((a, b) => {
-    if (b.points !== a.points) return b.points - a.points;
-    return b.ga - a.ga;
-  });
-};
 
   if (!loggedInUser) {
   return (
@@ -685,7 +630,7 @@ const handleLogout = () => {
                       </thead>
                       <tbody>
                       {currentScores.map((s, index) => {
-                        const trend = getTrend(s.team);
+                        const trend = getTrendGeneral(s.team);
 
                         return (
                             <tr key={s.team}>
@@ -705,7 +650,7 @@ const handleLogout = () => {
                     </table>
                     <div className="evolution-chart-container" style={{marginTop: '30px', marginBottom: '30px'}}>
                       <h4 style={{textAlign: 'center', color: '#888', marginBottom: '15px', fontSize: '12px'}}>
-                        EVOLUCIÓN DE POSICIONES
+                        PUESTOS POR FECHA
                       </h4>
                       <div style={{width: '100%', height: 300}}>
                         <ResponsiveContainer>
@@ -738,6 +683,53 @@ const handleLogout = () => {
                         </ResponsiveContainer>
                       </div>
                     </div>
+                    <div className="evolution-chart-container" style={{
+                      marginTop: '30px',
+                      marginBottom: '30px',
+                      borderTop: '1px solid #333',
+                      paddingTop: '20px'
+                    }}>
+                      <h4 style={{textAlign: 'center', color: '#ffd700', marginBottom: '15px', fontSize: '12px'}}>
+                        EVOLUCIÓN EN LA TABLA GENERAL
+                      </h4>
+                      <div style={{width: '100%', height: 300}}>
+                        <ResponsiveContainer>
+                          {/* Cambiamos LineChart por AreaChart */}
+                          <AreaChart data={getGeneralHistoryData()}>
+                            <defs>
+                              {/* Definimos un gradiente para tu equipo */}
+                              <linearGradient id="colorUser" x1="0" y1="0" x2="0" y2="1">
+                                <stop offset="5%" stopColor="#ffd700" stopOpacity={0.3}/>
+                                <stop offset="95%" stopColor="#ffd700" stopOpacity={0}/>
+                              </linearGradient>
+                            </defs>
+                            <CartesianGrid strokeDasharray="3 3" stroke="#333" vertical={false}/>
+                            <XAxis dataKey="name" stroke="#888" fontSize={12} tickLine={false} axisLine={false}/>
+                            <YAxis reversed domain={[1, 11]} stroke="#888" fontSize={12} tickLine={false}
+                                   axisLine={false}/>
+                            <Tooltip contentStyle={{
+                              backgroundColor: '#1a1a1a',
+                              border: '1px solid #333',
+                              borderRadius: '8px'
+                            }}/>
+
+                            {Object.keys(hardcodedUsers).map((team, index) => (
+                                <Area
+                                    key={`general-${team}`}
+                                    type="monotone"
+                                    dataKey={team}
+                                    // Si es el usuario logueado, usamos el gradiente dorado, si no, solo una línea fina
+                                    stroke={loggedInUser === team ? "#ffd700" : `hsl(${index * 35}, 50%, 40%)`}
+                                    fillOpacity={1}
+                                    fill={loggedInUser === team ? "url(#colorUser)" : "transparent"}
+                                    strokeWidth={loggedInUser === team ? 4 : 1}
+                                />
+                            ))}
+                          </AreaChart>
+                        </ResponsiveContainer>
+                      </div>
+                    </div>
+
                   </div>
 
               )}
@@ -757,34 +749,5 @@ const handleLogout = () => {
   );
 };
 
-const calcularRankingAcumulado = (datosHistorial, usuarios, puntosEscala) => {
-  let totales = {};
-
-  // Inicializamos a cero
-  Object.keys(usuarios).forEach(t => {
-    totales[t] = { team: t, points: 0, ga: 0 };
-  });
-
-  // Procesamos fecha por fecha
-  datosHistorial.forEach(f => {
-    const rankingFecha = [...f.resultados].sort((a, b) => {
-      if (b.scoreFecha !== a.scoreFecha) return b.scoreFecha - a.scoreFecha;
-      return b.ga - a.ga;
-    });
-
-    rankingFecha.forEach((res, pos) => {
-      if (totales[res.team]) {
-        totales[res.team].points += puntosEscala[pos] || 0;
-        totales[res.team].ga = res.ga; // Tomamos el último GA reportado
-      }
-    });
-  });
-
-  // Retornamos la lista ordenada (el Ranking)
-  return Object.values(totales).sort((a, b) => {
-    if (b.points !== a.points) return b.points - a.points;
-    return b.ga - a.ga;
-  });
-};
 
 export default FootballField;
