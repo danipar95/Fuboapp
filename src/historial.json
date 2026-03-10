@@ -79,4 +79,21 @@
       { "team": "CMP", "scoreFecha": 13 , "ga": 0 }
     ]
   }
+  ,
+   {
+    "fecha": 8,
+    "resultados": [
+      { "team": "Blackbird", "scoreFecha": 29 , "ga": 3 },
+      { "team": "LORD", "scoreFecha": 13 , "ga": 1 },
+      { "team": "Danipar", "scoreFecha": 24 , "ga": 3 },
+      { "team": "Invernalia", "scoreFecha": 39 , "ga": 3 },
+      { "team": "Piris", "scoreFecha": 24 , "ga": 1 },
+      { "team": "Milico", "scoreFecha": 29 , "ga": 2 },
+      { "team": "Pynandi", "scoreFecha": 29 , "ga": 3 },
+      { "team": "La Fabrica", "scoreFecha": 29 , "ga": 4 },
+      { "team": "Red Devils", "scoreFecha": 32 , "ga": 3 },
+      { "team": "Celtic", "scoreFecha": 17 , "ga": 1 },
+      { "team": "CMP", "scoreFecha": 46 , "ga": 4 }
+    ]
+  }
 ]
