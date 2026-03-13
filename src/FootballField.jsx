@@ -239,6 +239,33 @@ const FootballField = () => {
     }
     return true;
   };
+  // --- NUEVA FUNCIÓN: Cambia la formación y reubica a los jugadores ---
+  const handleFormationChange = (e) => {
+    const nuevaFormacion = e.target.value;
+    setSelectedFormation(nuevaFormacion); // Cambiamos el estado de la formación
+
+    // Traemos las coordenadas exactas de la nueva formación elegida
+    const nuevosSlots = formationPositions[nuevaFormacion];
+    const slotsOcupados = new Set(); // Para no poner a 2 jugadores en el mismo lugar
+
+    // Reposicionamos a cada jugador que ya está en la cancha
+    const jugadoresReubicados = onFieldPlayers.map(jugador => {
+      // Buscamos un hueco para su posición (Ej: Defensa) que no hayamos usado todavía
+      const indexSlot = nuevosSlots.findIndex((slot, i) =>
+        slot.pos === jugador.position && !slotsOcupados.has(i)
+      );
+
+      if (indexSlot !== -1) {
+        slotsOcupados.add(indexSlot); // Marcamos este hueco como ocupado
+        // Le asignamos las nuevas coordenadas al jugador
+        return { ...jugador, x: nuevosSlots[indexSlot].x, y: nuevosSlots[indexSlot].y };
+      }
+      return jugador;
+    });
+
+    // Actualizamos la cancha con los jugadores en sus nuevas posiciones
+    setOnFieldPlayers(jugadoresReubicados);
+  };
   const handleDragEnd = (event) => {
     const { over, active } = event;
     setActivePlayer(null);
@@ -407,78 +434,86 @@ const FootballField = () => {
 
             <div className="teams-list-content">
               {activeTab === 'armar' ? (
-                <>
-                  <button onClick={handleSaveTeam} className="save-btn" style={{ marginBottom: '15px' }}>Descargar Equipo</button>
+                  <>
+                    <button onClick={handleSaveTeam} className="save-btn" style={{marginBottom: '15px'}}>Descargar
+                      Equipo
+                    </button>
 
-                  {/* SELECTOR DE EQUIPO (JUGADORES) */}
-                  <div className="select-group">
-                    <label>Equipo (Jugadores)</label>
-                    <select
-                      value={selectedTeam?.teamName || ""}
-                      onChange={e => setSelectedTeam(playersData.find(t => t.teamName === e.target.value))}
-                    >
-                      {playersData.map(t => (
-                        <option key={`equipo-${t.teamName}`} value={t.teamName}>{t.teamName}</option>
-                      ))}
-                    </select>
-                  </div>
+                    {/* SELECTOR DE EQUIPO (JUGADORES) */}
+                    <div className="select-group">
+                      <label>Equipo (Jugadores)</label>
+                      <select
+                          value={selectedTeam?.teamName || ""}
+                          onChange={e => setSelectedTeam(playersData.find(t => t.teamName === e.target.value))}
+                      >
+                        {playersData.map(t => (
+                            <option key={`equipo-${t.teamName}`} value={t.teamName}>{t.teamName}</option>
+                        ))}
+                      </select>
+                    </div>
 
-                  <div className="select-group">
-                    <label>Formación</label>
-                    {/* Volvemos al onChange simple, porque las opciones inválidas ya no se podrán clickear */}
-                    <select value={selectedFormation} onChange={e => setSelectedFormation(e.target.value)}>
-                      {availableFormations.map(f => {
-                        const disponible = isFormationAllowed(f);
-                        return (
-                            <option key={f} value={f} disabled={!disponible}>
-                              {f} {!disponible && "(No compatible)"}
+                    <div className="select-group">
+                      <label>Formación</label>
+                      {/* Reemplazamos el onChange simple por nuestra nueva función */}
+                      <select value={selectedFormation} onChange={handleFormationChange}>
+                        {availableFormations.map(f => {
+                          const disponible = isFormationAllowed(f);
+                          return (
+                              <option key={f} value={f} disabled={!disponible}>
+                                {f} {!disponible && "(No compatible)"}
+                              </option>
+                          );
+                        })}
+                      </select>
+                    </div>
+                    {/* SELECTOR DE DT (CLUBES) */}
+                    <div className="select-group">
+                      <label>DT de la Fecha</label>
+                      <select value={selectedDT} onChange={e => setSelectedDT(e.target.value)} className="dt-select">
+                        <option value="">Elegir DT...</option>
+                        {playersData.map(t => (
+                            <option key={`dt-${t.teamName}`} value={t.teamName}>
+                              {t.teamName}
                             </option>
-                        );
-                      })}
-                    </select>
-                  </div>
+                        ))}
+                      </select>
+                    </div>
 
-                  {/* SELECTOR DE DT (CLUBES) */}
-                  <div className="select-group">
-                    <label>DT de la Fecha</label>
-                    <select value={selectedDT} onChange={e => setSelectedDT(e.target.value)} className="dt-select">
-                      <option value="">Elegir DT...</option>
-                      {playersData.map(t => (
-                          <option key={`dt-${t.teamName}`} value={t.teamName}>
-                            {t.teamName}
-                          </option>
+                    <div className="players-by-position">
+                      {['Portero', 'Defensa', 'Mediocampista', 'Delantero'].map(pos => (
+                          <div key={pos} className="pos-section">
+                            <h4 style={{
+                              color: '#aaa',
+                              margin: '15px 0 5px 0',
+                              fontSize: '12px',
+                              textTransform: 'uppercase'
+                            }}>{pos}</h4>
+                            <ul>
+                              {selectedTeam && selectedTeam.players
+                                  .filter(p => p.position === pos && !onFieldPlayers.some(fp => fp.id === p.id))
+                                  .map(p => (
+                                      <DraggablePlayer key={p.id} player={p} teamName={selectedTeam.teamName}/>
+                                  ))}
+                            </ul>
+                          </div>
                       ))}
-                    </select>
-                  </div>
-
-                  <div className="players-by-position">
-                    {['Portero', 'Defensa', 'Mediocampista', 'Delantero'].map(pos => (
-                      <div key={pos} className="pos-section">
-                        <h4 style={{ color: '#aaa', margin: '15px 0 5px 0', fontSize: '12px', textTransform: 'uppercase' }}>{pos}</h4>
-                        <ul>
-                          {selectedTeam && selectedTeam.players
-                            .filter(p => p.position === pos && !onFieldPlayers.some(fp => fp.id === p.id))
-                            .map(p => (
-                              <DraggablePlayer key={p.id} player={p} teamName={selectedTeam.teamName}/>
-                          ))}
-                        </ul>
-                      </div>
-                    ))}
-                  </div>
-                </>
+                    </div>
+                  </>
               ) : (
-                <div className="scores-container">
+                  <div className="scores-container">
 
-                  <div className="tournament-progress">
-                    <div className="progress-info">
+                    <div className="tournament-progress">
+                      <div className="progress-info">
                         <span>Jornada {nroFechaActual} de {totalFechasTorneo}</span>
                         <span>{Math.round(progresoPuntual)}% Completado</span>
+                      </div>
+                      <div className="progress-bar-bg">
+                        <div className="progress-bar-fill" style={{width: `${progresoPuntual}%`}}></div>
+                      </div>
                     </div>
-                    <div className="progress-bar-bg"><div className="progress-bar-fill" style={{width: `${progresoPuntual}%`}}></div></div>
-                  </div>
 
-                  <div className="scores-header">
-                      <h3 style={{ margin: 0 }}>Tabla General</h3>
+                    <div className="scores-header">
+                      <h3 style={{margin: 0}}>Tabla General</h3>
                       <span className="season-tag">2026</span>
                   </div>
                   <table className="scores-table">
