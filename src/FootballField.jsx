@@ -417,19 +417,31 @@ const FootballField = () => {
 
           <div className={`teams-list-panel ${isPanelOpen ? 'panel-open' : ''}`}>
 
+            {/* --- BOTÓN PARA SUBIR Y BAJAR EL PANEL EN CELULARES --- */}
+            <button
+                className="panel-toggle-btn"
+                onClick={() => setIsPanelOpen(!isPanelOpen)}
+            >
+              {isPanelOpen ? '▼' : '▲'}
+            </button>
+
             <div className="panel-header-row">
-                <div className="user-info">
-                    <h3>{loggedInUser}</h3>
-                    <small>DT Oficial</small>
-                </div>
-                <button className="logout-btn" onClick={() => setLoggedInUser(null)}>
-                    <span className="logout-icon">🚪</span> Salir
-                </button>
+              <div className="user-info">
+                <h3>{loggedInUser}</h3>
+                <small>DT Oficial</small>
+              </div>
+              <button className="logout-btn" onClick={() => setLoggedInUser(null)}>
+                <span className="logout-icon">🚪</span> Salir
+              </button>
             </div>
 
             <div className="tabs-header">
-              <button className={`tab-btn ${activeTab === 'armar' ? 'active' : ''}`} onClick={() => setActiveTab('armar')}>Armar</button>
-              <button className={`tab-btn ${activeTab === 'puntos' ? 'active' : ''}`} onClick={() => setActiveTab('puntos')}>Puntos</button>
+              <button className={`tab-btn ${activeTab === 'armar' ? 'active' : ''}`}
+                      onClick={() => setActiveTab('armar')}>Armar
+              </button>
+              <button className={`tab-btn ${activeTab === 'puntos' ? 'active' : ''}`}
+                      onClick={() => setActiveTab('puntos')}>Puntos
+              </button>
             </div>
 
             <div className="teams-list-content">
@@ -515,9 +527,9 @@ const FootballField = () => {
                     <div className="scores-header">
                       <h3 style={{margin: 0}}>Tabla General</h3>
                       <span className="season-tag">2026</span>
-                  </div>
-                  <table className="scores-table">
-                    <tbody>
+                    </div>
+                    <table className="scores-table">
+                      <tbody>
                       {currentScores.map((s, index) => {
                         const trend = getTrendGeneral(s.team);
                         const isMe = loggedInUser === s.team;
@@ -528,29 +540,29 @@ const FootballField = () => {
                         else if (index === 2) medalClass = 'bronze';
 
                         return (
-                          <tr key={s.team} className={`${isMe ? 'highlight-row' : ''} ${medalClass}`}>
-                            <td style={{ width: '20px', textAlign: 'center', color: '#888' }}>{index + 1}</td>
-                            <td className="trend-cell">
-                              {trend === "up" && <span className="trend-up">▲</span>}
-                              {trend === "down" && <span className="trend-down">▼</span>}
-                              {trend === "equal" && <span className="trend-equal">─</span>}
-                            </td>
-                            <td className="team-info-cell">
+                            <tr key={s.team} className={`${isMe ? 'highlight-row' : ''} ${medalClass}`}>
+                              <td style={{width: '20px', textAlign: 'center', color: '#888'}}>{index + 1}</td>
+                              <td className="trend-cell">
+                                {trend === "up" && <span className="trend-up">▲</span>}
+                                {trend === "down" && <span className="trend-down">▼</span>}
+                                {trend === "equal" && <span className="trend-equal">─</span>}
+                              </td>
+                              <td className="team-info-cell">
                                 <strong>{s.team}</strong>
                                 <small>GA: {s.ga}</small>
-                            </td>
-                            <td className="pts-details">
+                              </td>
+                              <td className="pts-details">
                                 <div className="points-badge">
-                                    <span className="total-pts">{s.points}</span>
+                                  <span className="total-pts">{s.points}</span>
                                 </div>
-                            </td>
-                          </tr>
+                              </td>
+                            </tr>
                         );
                       })}
-                    </tbody>
-                  </table>
+                      </tbody>
+                    </table>
 
-                  <div className="fecha-details">
+                    <div className="fecha-details">
                       <div className="selector-fecha">
                         <label>FECHA:</label>
                         <select value={viewingFecha} onChange={(e) => setViewingFecha(Number(e.target.value))}>
@@ -558,57 +570,73 @@ const FootballField = () => {
                         </select>
                       </div>
                       <table className="mini-table">
-                          <thead>
-                              <tr>
-                                  <th className="m-pos">#</th>
-                                  <th className="m-team">EQUIPO</th>
-                                  <th className="m-score">PTS</th>
-                                  <th className="m-ga">GA</th>
-                                  <th className="m-pts">LIGA</th>
+                        <thead>
+                        <tr>
+                          <th className="m-pos">#</th>
+                          <th className="m-team">EQUIPO</th>
+                          <th className="m-score">PTS</th>
+                          <th className="m-ga">GA</th>
+                          <th className="m-pts">LIGA</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {resultadosFechaVista.map((res, index) => {
+                          const isMe = loggedInUser === res.team;
+                          const puntosGanados = getLeaguePoints(index);
+                          return (
+                              <tr key={res.team} className={isMe ? 'highlight-row' : ''}>
+                                <td className="m-pos">{index + 1}</td>
+                                <td className="m-team">{res.team}</td>
+                                <td className="m-score">{res.scoreFecha}</td>
+                                <td className="m-ga">{res.ga}</td>
+                                <td className="m-pts gain">+{puntosGanados}</td>
                               </tr>
-                          </thead>
-                          <tbody>
-                          {resultadosFechaVista.map((res, index) => {
-                              const isMe = loggedInUser === res.team;
-                              const puntosGanados = getLeaguePoints(index);
-                              return (
-                                  <tr key={res.team} className={isMe ? 'highlight-row' : ''}>
-                                      <td className="m-pos">{index + 1}</td>
-                                      <td className="m-team">{res.team}</td>
-                                      <td className="m-score">{res.scoreFecha}</td>
-                                      <td className="m-ga">{res.ga}</td>
-                                      <td className="m-pts gain">+{puntosGanados}</td>
-                                  </tr>
-                              );
-                          })}
-                          </tbody>
+                          );
+                        })}
+                        </tbody>
                       </table>
-                  </div>
-{/* GRÁFICOS */}
-                  <div style={{ width: '100%', maxWidth: '100%', overflow: 'hidden', marginTop: '30px', boxSizing: 'border-box' }}>
-                    <h4 style={{textAlign: 'center', color: '#ffd700', marginBottom: '15px', fontSize: '12px'}}>
-                      POSICIONES POR FECHA
-                    </h4>
-                    <ResponsiveContainer width="100%" height={250}>
-                      {/* Agregamos margin para compensar el espacio de los ejes */}
-                      <LineChart data={getEvolutionData()} margin={{ top: 5, right: 20, left: -25, bottom: 5 }}>
-                        <CartesianGrid strokeDasharray="3 3" stroke="#333" />
-                        <XAxis dataKey="name" stroke="#888" fontSize={10} />
-                        <YAxis reversed domain={[1, 11]} stroke="#888" fontSize={10} />
-                        <Tooltip contentStyle={{ backgroundColor: '#222', border: '1px solid #444' }} />
-                        {Object.keys(hardcodedUsers).map((team, i) => (
-                          <Line key={team} type="monotone" dataKey={team} stroke={loggedInUser === team ? "#ffd700" : `hsl(${i * 35}, 60%, 45%)`} strokeWidth={loggedInUser === team ? 4 : 2} dot={loggedInUser === team} activeDot={{ r: 8 }} />
-                        ))}
-                      </LineChart>
-                    </ResponsiveContainer>
-                  </div>
+                    </div>
+                    {/* GRÁFICOS */}
+                    <div style={{
+                      width: '100%',
+                      maxWidth: '100%',
+                      overflow: 'hidden',
+                      marginTop: '30px',
+                      boxSizing: 'border-box'
+                    }}>
+                      <h4 style={{textAlign: 'center', color: '#ffd700', marginBottom: '15px', fontSize: '12px'}}>
+                        POSICIONES POR FECHA
+                      </h4>
+                      <ResponsiveContainer width="100%" height={250}>
+                        {/* Agregamos margin para compensar el espacio de los ejes */}
+                        <LineChart data={getEvolutionData()} margin={{top: 5, right: 20, left: -25, bottom: 5}}>
+                          <CartesianGrid strokeDasharray="3 3" stroke="#333"/>
+                          <XAxis dataKey="name" stroke="#888" fontSize={10}/>
+                          <YAxis reversed domain={[1, 11]} stroke="#888" fontSize={10}/>
+                          <Tooltip contentStyle={{backgroundColor: '#222', border: '1px solid #444'}}/>
+                          {Object.keys(hardcodedUsers).map((team, i) => (
+                              <Line key={team} type="monotone" dataKey={team}
+                                    stroke={loggedInUser === team ? "#ffd700" : `hsl(${i * 35}, 60%, 45%)`}
+                                    strokeWidth={loggedInUser === team ? 4 : 2} dot={loggedInUser === team}
+                                    activeDot={{r: 8}}/>
+                          ))}
+                        </LineChart>
+                      </ResponsiveContainer>
+                    </div>
 
-                  <div style={{ width: '100%', maxWidth: '100%', overflow: 'hidden', marginTop: '30px', marginBottom: '30px', boxSizing: 'border-box' }}>
-                    <h4 style={{textAlign: 'center', color: '#ffd700', marginBottom: '15px', fontSize: '12px'}}>
-                      CARRERA POR EL TÍTULO
-                    </h4>
-                    <ResponsiveContainer width="100%" height={250}>
-                        <AreaChart data={getGeneralHistoryData()} margin={{ top: 5, right: 20, left: -25, bottom: 5 }}>
+                    <div style={{
+                      width: '100%',
+                      maxWidth: '100%',
+                      overflow: 'hidden',
+                      marginTop: '30px',
+                      marginBottom: '30px',
+                      boxSizing: 'border-box'
+                    }}>
+                      <h4 style={{textAlign: 'center', color: '#ffd700', marginBottom: '15px', fontSize: '12px'}}>
+                        CARRERA POR EL TÍTULO
+                      </h4>
+                      <ResponsiveContainer width="100%" height={250}>
+                        <AreaChart data={getGeneralHistoryData()} margin={{top: 5, right: 20, left: -25, bottom: 5}}>
                           <defs>
                             <linearGradient id="colorUser" x1="0" y1="0" x2="0" y2="1">
                               <stop offset="5%" stopColor="#ffd700" stopOpacity={0.3}/>
@@ -617,45 +645,55 @@ const FootballField = () => {
                           </defs>
                           <CartesianGrid strokeDasharray="3 3" stroke="#333" vertical={false}/>
                           <XAxis dataKey="name" stroke="#888" fontSize={10} tickLine={false} axisLine={false}/>
-                          <YAxis reversed domain={[1, 11]} stroke="#888" fontSize={10} tickLine={false} axisLine={false}/>
-                          <Tooltip contentStyle={{ backgroundColor: '#1a1a1a', border: '1px solid #333', borderRadius: '8px' }} />
+                          <YAxis reversed domain={[1, 11]} stroke="#888" fontSize={10} tickLine={false}
+                                 axisLine={false}/>
+                          <Tooltip contentStyle={{
+                            backgroundColor: '#1a1a1a',
+                            border: '1px solid #333',
+                            borderRadius: '8px'
+                          }}/>
                           {Object.keys(hardcodedUsers).map((team, index) => (
-                              <Area key={`general-${team}`} type="monotone" dataKey={team} stroke={loggedInUser === team ? "#ffd700" : `hsl(${index * 35}, 50%, 40%)`} strokeWidth={loggedInUser === team ? 4 : 1} fillOpacity={1} fill={loggedInUser === team ? "url(#colorUser)" : "transparent"} dot={loggedInUser === team ? {r: 4, fill: '#ffd700'} : false} connectNulls />
+                              <Area key={`general-${team}`} type="monotone" dataKey={team}
+                                    stroke={loggedInUser === team ? "#ffd700" : `hsl(${index * 35}, 50%, 40%)`}
+                                    strokeWidth={loggedInUser === team ? 4 : 1} fillOpacity={1}
+                                    fill={loggedInUser === team ? "url(#colorUser)" : "transparent"}
+                                    dot={loggedInUser === team ? {r: 4, fill: '#ffd700'} : false} connectNulls/>
                           ))}
                         </AreaChart>
-                    </ResponsiveContainer>
+                      </ResponsiveContainer>
 
-                    {/* --- NUEVA TABLA: SUMATORIA DE PUNTOS TOTALES --- */}
-                  <div className="fecha-details" style={{ marginTop: '30px', marginBottom: '30px' }}>
-                      <h4 style={{ textAlign: 'center', color: '#ffd700', marginBottom: '15px' }}>
-                        TOTAL DE PUNTOS HECHOS
-                      </h4>
-                      <table className="mini-table">
+                      {/* --- NUEVA TABLA: SUMATORIA DE PUNTOS TOTALES --- */}
+                      <div className="fecha-details" style={{marginTop: '30px', marginBottom: '30px'}}>
+                        <h4 style={{textAlign: 'center', color: '#ffd700', marginBottom: '15px'}}>
+                          TOTAL DE PUNTOS HECHOS
+                        </h4>
+                        <table className="mini-table">
                           <thead>
-                              <tr>
-                                  <th className="m-pos">#</th>
-                                  <th className="m-team">EQUIPO</th>
-                                  <th className="m-score" style={{ width: '80px' }}>PTS TOTALES</th>
-                              </tr>
+                          <tr>
+                            <th className="m-pos">#</th>
+                            <th className="m-team">EQUIPO</th>
+                            <th className="m-score" style={{width: '80px'}}>PTS TOTALES</th>
+                          </tr>
                           </thead>
                           <tbody>
                           {rankingPuntosTotales.map((res, index) => {
-                              const isMe = loggedInUser === res.team;
-                              return (
-                                  <tr key={res.team} className={isMe ? 'highlight-row' : ''}>
-                                      <td className="m-pos">{index + 1}</td>
-                                      <td className="m-team">{res.team}</td>
-                                      <td className="m-score" style={{ color: '#4caf50', fontWeight: 'bold', fontSize: '13px' }}>
-                                        {res.totalScore}
-                                      </td>
-                                  </tr>
-                              );
+                            const isMe = loggedInUser === res.team;
+                            return (
+                                <tr key={res.team} className={isMe ? 'highlight-row' : ''}>
+                                  <td className="m-pos">{index + 1}</td>
+                                  <td className="m-team">{res.team}</td>
+                                  <td className="m-score"
+                                      style={{color: '#4caf50', fontWeight: 'bold', fontSize: '13px'}}>
+                                    {res.totalScore}
+                                  </td>
+                                </tr>
+                            );
                           })}
                           </tbody>
-                      </table>
+                        </table>
+                      </div>
+                    </div>
                   </div>
-                  </div>
-                </div>
               )}
             </div>
           </div>
@@ -665,9 +703,10 @@ const FootballField = () => {
       <DragOverlay>
         {activePlayer ? (
             <div className="player-on-field dragging-helper">
-              <div className="player-name" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', lineHeight: '1.1' }}>
+              <div className="player-name"
+                   style={{display: 'flex', flexDirection: 'column', alignItems: 'center', lineHeight: '1.1'}}>
                 {activePlayer.name.split(' ').map((palabra, index) => (
-                  <span key={index}>{palabra}</span>
+                    <span key={index}>{palabra}</span>
                 ))}
               </div>
               <span className="player-team">{activePlayer.teamName}</span>
