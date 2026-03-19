@@ -357,12 +357,18 @@ const FootballField = () => {
               {onFieldPlayers.map(p => (
                 <div key={p.id} className={`player-on-field ${captainId === p.id ? 'is-captain' : ''}`} style={{top: `${p.y}%`, left: `${p.x}%`}} onDoubleClick={() => setCaptainId(p.id)}>
 
-                  {/* --- NOMBRES EN MÚLTIPLES LÍNEAS --- */}
+                  {/* NOMBRES EN MÚLTIPLES LÍNEAS */}
                   <div className="player-name" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', lineHeight: '1.1' }}>
                     {p.name.split(' ').map((palabra, index) => (
                       <span key={index}>{palabra}</span>
                     ))}
                   </div>
+
+                  {/* --- NUEVO: NOMBRE DEL EQUIPO EN LA CANCHA --- */}
+                  <span className="player-team" style={{ fontSize: '9px', color: '#ffd700', marginTop: '2px', textAlign: 'center', textTransform: 'uppercase', whiteSpace: 'nowrap' }}>
+                    {p.teamName}
+                  </span>
+
                   <button className="delete-player-btn" onClick={() => setOnFieldPlayers(onFieldPlayers.filter(pl => pl.id !== p.id))}>×</button>
                   {captainId === p.id && <div className="captain-armband">C</div>}
                 </div>
@@ -388,9 +394,6 @@ const FootballField = () => {
 
               {/* Fila principal con los datos del equipo */}
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <div>
-                  <span style={{ color: '#ffd700', fontWeight: 'bold' }}>EQUIPO:</span> {selectedTeam?.teamName || "Sin Seleccionar"}
-                </div>
                 <div>
                   <span style={{ color: '#ffd700', fontWeight: 'bold' }}>FORMACIÓN:</span> {selectedFormation}
                 </div>

@@ -217,6 +217,7 @@
     "teamName": "LIBERTAD",
     "players": [
       { "id": 431, "name": "Alan Benítez", "position": "Defensa" },
+      { "id": 432, "name": "Matias Rojas", "position": "Mediocampista" },
       { "id": 183, "name": "Óscar Cardozo", "position": "Delantero" },
       { "id": 184, "name": "Marcelo Fernandez", "position": "Delantero" },
       { "id": 185, "name": "Pedro Villalba", "position": "Delantero" },
