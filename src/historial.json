@@ -115,7 +115,7 @@
    {
     "fecha": 10,
     "resultados": [
-      { "team": "Blackbird", "scoreFecha":  , "ga":  },
+      { "team": "Blackbird", "scoreFecha": 48 , "ga": 4 },
       { "team": "LORD", "scoreFecha": 27 , "ga": 2 },
       { "team": "Danipar", "scoreFecha": 26 , "ga": 2 },
       { "team": "Invernalia", "scoreFecha": 21 , "ga": 2 },
