@@ -64,6 +64,21 @@ const calcularRankingAcumulado = (datosHistorial, usuarios, puntosEscala) => {
     });
   });
 
+  // ==========================================
+  // NUEVO: SISTEMA DE PENALIZACIONES
+  // ==========================================
+  const penalizaciones = {
+    "Blackbird": 1,  // Le resta 1 punto a Blackbird
+    // "OtroEquipo": 2, // Si necesitas penalizar a otro, lo agregas así
+  };
+
+  Object.keys(penalizaciones).forEach(equipo => {
+    if (totales[equipo]) {
+      totales[equipo].points -= penalizaciones[equipo];
+    }
+  });
+  // ==========================================
+
   return Object.values(totales).sort((a, b) => {
     if (b.points !== a.points) return b.points - a.points;
     if (b.ga !== a.ga) return b.ga - a.ga;
