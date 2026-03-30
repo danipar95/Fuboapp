@@ -84,7 +84,7 @@
    {
     "fecha": 7,
     "resultados": [
-      { "team": "Blackbird", "scoreFecha": 18 , "ga": 1 },
+      { "team": "Blackbird", "scoreFecha": 0 , "ga": 1 },
       { "team": "LORD", "scoreFecha": 13 , "ga": 0 },
       { "team": "Danipar", "scoreFecha": 15 , "ga": 0 },
       { "team": "Invernalia", "scoreFecha": 23 , "ga": 0 },
@@ -149,7 +149,7 @@
    {
     "fecha": 11,
     "resultados": [
-      { "team": "Blackbird", "scoreFecha": 0 , "ga": 4 },
+      { "team": "Blackbird", "scoreFecha": 38 , "ga": 4 },
       { "team": "LORD", "scoreFecha": 38 , "ga": 4 },
       { "team": "Danipar", "scoreFecha": 29 , "ga": 4 },
       { "team": "Invernalia", "scoreFecha": 33 , "ga": 2 },
