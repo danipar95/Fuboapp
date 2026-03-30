@@ -62,9 +62,27 @@
       { "team": "Celtic", "scoreFecha": 16 , "ga": 1 },
       { "team": "CMP", "scoreFecha": 23 , "ga": 2 }
     ]
-  },
+  }
+  ,
    {
     "fecha": 6,
+    "resultados": [
+      { "team": "Blackbird", "scoreFecha": 18 , "ga": 1 },
+      { "team": "LORD", "scoreFecha": 13 , "ga": 0 },
+      { "team": "Danipar", "scoreFecha": 15 , "ga": 0 },
+      { "team": "Invernalia", "scoreFecha": 23 , "ga": 0 },
+      { "team": "Piris", "scoreFecha": 19 , "ga": 2 },
+      { "team": "Milico", "scoreFecha": 15 , "ga": 1 },
+      { "team": "Pynandi", "scoreFecha": 21 , "ga": 2 },
+      { "team": "La Fabrica", "scoreFecha": 16 , "ga": 0 },
+      { "team": "Red Devils", "scoreFecha": 21 , "ga": 2 },
+      { "team": "Celtic", "scoreFecha": 18 , "ga": 1 },
+      { "team": "CMP", "scoreFecha": 13 , "ga": 1 }
+    ]
+  }
+   ,
+   {
+    "fecha": 7,
     "resultados": [
       { "team": "Blackbird", "scoreFecha": 24 , "ga": 2 },
       { "team": "LORD", "scoreFecha": 10 , "ga": 1 },
