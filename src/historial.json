@@ -161,7 +161,7 @@
       { "team": "Celtic", "scoreFecha": 23 , "ga": 2 },
       { "team": "CMP", "scoreFecha": 41 , "ga": 5 }
     ]
-	,
+   },
    {
     "fecha": 12,
     "resultados": [
@@ -178,5 +178,5 @@
       { "team": "CMP", "scoreFecha": 29 , "ga": 2 }
     ]
   }
-  }
+  
 ]
