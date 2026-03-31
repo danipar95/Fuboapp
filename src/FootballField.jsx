@@ -69,7 +69,7 @@ const calcularRankingAcumulado = (datosHistorial, usuarios, puntosEscala) => {
   // ==========================================
   const penalizaciones = {
     "Blackbird": 1,  // Le resta 1 punto a Blackbird
-    // "OtroEquipo": 2, // Si necesitas penalizar a otro, lo agregas así
+
   };
 
   Object.keys(penalizaciones).forEach(equipo => {
@@ -195,7 +195,7 @@ const FootballField = () => {
   };
 
   const getLeaguePoints = (index) => puntosDeLiga[index] || 0;
-  // --- NUEVO: CÁLCULO DE PUNTOS TOTALES (bruto) ---
+  // --- NUEVO: CÁLCULO DE PUNTOS TOTALES ---
   const rankingPuntosTotales = (() => {
     let totales = {};
     Object.keys(hardcodedUsers).forEach(t => totales[t] = { team: t, totalScore: 0 });
@@ -254,7 +254,7 @@ const FootballField = () => {
     }
     return true;
   };
-  // --- NUEVA FUNCIÓN: Cambia la formación y reubica a los jugadores ---
+  // Cambia la formación y reubica a los jugadores ---
   const handleFormationChange = (e) => {
     const nuevaFormacion = e.target.value;
     setSelectedFormation(nuevaFormacion); // Cambiamos el estado de la formación
@@ -356,7 +356,6 @@ const FootballField = () => {
         {confirmModal && <Modal message={confirmModal.message} onClose={confirmModal.onCancel} onConfirm={confirmModal.onConfirm} showButtons={true} />}
 
         <div className="field-and-panel-wrapper">
-
           {/* ========================================= */}
           {/* ZONA DE CAPTURA DE IMAGEN CON EL FOOTER */}
           {/* ========================================= */}
@@ -389,8 +388,6 @@ const FootballField = () => {
                 </div>
               ))}
             </div>
-
-            {/* EL PIE DE FOTO (FOOTER) */}
             {/* EL PIE DE FOTO (FOOTER) */}
             <div style={{
               marginTop: '10px',
