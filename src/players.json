@@ -254,6 +254,7 @@
   {
     "teamName": "NACIONAL",
     "players": [
+      { "id": 433, "name": "Hugo Valdez", "position": "Mediocampista" },
       { "id": 220, "name": "Alejandro Samudio", "position": "Delantero" },
 	  { "id": 428, "name": "Josue Colman", "position": "Mediocampista" },
 	  { "id": 240, "name": "Hugo A. Benitez", "position": "Delantero" },
@@ -367,6 +368,7 @@
       { "id": 311, "name": "Luis Vargas", "position": "Defensa" },
       { "id": 312, "name": "Alexis Doldán", "position": "Defensa" },
       { "id": 313, "name": "Luis Cáceres", "position": "Defensa" },
+      { "id": 418, "name": "Leandro Esteche", "position": "Defensa" },
       { "id": 314, "name": "Teodoro Paredes", "position": "Defensa" },
       { "id": 315, "name": "Mattias Parris", "position": "Defensa" },
       { "id": 316, "name": "Pablo Aveiro", "position": "Defensa" },
@@ -486,7 +488,6 @@
       { "id": 415, "name": "David Villalba", "position": "Defensa" },
       { "id": 416, "name": "Axel Cañete", "position": "Defensa" },
       { "id": 417, "name": "Diego Melgarejo", "position": "Defensa" },
-      { "id": 418, "name": "Leandro Esteche", "position": "Defensa" },
       { "id": 419, "name": "Matías Dufour", "position": "Portero" },
       { "id": 420, "name": "Victor Samudio", "position": "Portero" },
       { "id": 421, "name": "Mauro Rodas", "position": "Portero" }
