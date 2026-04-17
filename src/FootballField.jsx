@@ -363,29 +363,60 @@ const FootballField = () => {
 
             {/* LA CANCHA */}
             <div className="field-boundary">
+              <div style={{
+                position: 'absolute',
+                top: '15px',
+                right: '15px',
+                backgroundColor: 'rgba(0, 0, 0, 0.6)',
+                border: '1px solid rgba(255, 215, 0, 0.6)',
+                borderRadius: '6px',
+                padding: '6px 12px',
+                color: '#ffd700',
+                fontSize: '14px',
+                fontWeight: 'bold',
+                textTransform: 'uppercase',
+                letterSpacing: '2px',
+                zIndex: 20,
+                pointerEvents: 'none', /* Evita que el recuadro estorbe al arrastrar jugadores */
+                boxShadow: '0 4px 6px rgba(0,0,0,0.3)'
+                }}>
+                {loggedInUser}
+              </div>
               <div className="halfway-line"></div>
               {formationPositions[selectedFormation].map((pos, i) => {
                 const occupied = onFieldPlayers.some(p => Math.abs(p.x - pos.x) < 1 && Math.abs(p.y - pos.y) < 1);
-                return !occupied && <PlayerPlaceholder key={i} id={`slot-${i}`} position={pos.pos} top={pos.y} left={pos.x}/>;
+                return !occupied &&
+                    <PlayerPlaceholder key={i} id={`slot-${i}`} position={pos.pos} top={pos.y} left={pos.x}/>;
               })}
               {onFieldPlayers.map(p => (
-                <div key={p.id} className={`player-on-field ${captainId === p.id ? 'is-captain' : ''}`} style={{top: `${p.y}%`, left: `${p.x}%`}} onDoubleClick={() => setCaptainId(p.id)}>
+                  <div key={p.id} className={`player-on-field ${captainId === p.id ? 'is-captain' : ''}`}
+                       style={{top: `${p.y}%`, left: `${p.x}%`}} onDoubleClick={() => setCaptainId(p.id)}>
 
-                  {/* NOMBRES EN MÚLTIPLES LÍNEAS */}
-                  <div className="player-name" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', lineHeight: '1.1' }}>
-                    {p.name.split(' ').map((palabra, index) => (
-                      <span key={index}>{palabra}</span>
-                    ))}
-                  </div>
+                    {/* NOMBRES EN MÚLTIPLES LÍNEAS */}
+                    <div className="player-name"
+                         style={{display: 'flex', flexDirection: 'column', alignItems: 'center', lineHeight: '1.1'}}>
+                      {p.name.split(' ').map((palabra, index) => (
+                          <span key={index}>{palabra}</span>
+                      ))}
+                    </div>
 
-                  {/* --- NUEVO: NOMBRE DEL EQUIPO EN LA CANCHA --- */}
-                  <span className="player-team" style={{ fontSize: '9px', color: '#ffd700', marginTop: '2px', textAlign: 'center', textTransform: 'uppercase', whiteSpace: 'nowrap' }}>
+                    {/* --- NUEVO: NOMBRE DEL EQUIPO EN LA CANCHA --- */}
+                    <span className="player-team" style={{
+                      fontSize: '9px',
+                      color: '#ffd700',
+                      marginTop: '2px',
+                      textAlign: 'center',
+                      textTransform: 'uppercase',
+                      whiteSpace: 'nowrap'
+                    }}>
                     {p.teamName}
                   </span>
 
-                  <button className="delete-player-btn" onClick={() => setOnFieldPlayers(onFieldPlayers.filter(pl => pl.id !== p.id))}>×</button>
-                  {captainId === p.id && <div className="captain-armband">C</div>}
-                </div>
+                    <button className="delete-player-btn"
+                            onClick={() => setOnFieldPlayers(onFieldPlayers.filter(pl => pl.id !== p.id))}>×
+                    </button>
+                    {captainId === p.id && <div className="captain-armband">C</div>}
+                  </div>
               ))}
             </div>
             {/* EL PIE DE FOTO (FOOTER) */}
@@ -405,7 +436,7 @@ const FootballField = () => {
             }}>
 
               {/* Fila principal con los datos del equipo */}
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
                 <div>
                   <span style={{ color: '#ffd700', fontWeight: 'bold' }}>FORMACIÓN:</span> {selectedFormation}
                 </div>
